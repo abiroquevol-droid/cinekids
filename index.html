@@ -5,322 +5,422 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#07111f">
 <link rel="manifest" href="manifest.json">
+
 <title>CineKids</title>
 
 <style>
+
 :root{
- --bg:#07111f;
- --panel:#0c182a;
- --card:#101e33;
- --line:#20314b;
- --text:#fff;
- --muted:#9db0c9;
- --accent:#a78bfa;
+  --bg:#07111f;
+  --panel:#0c182a;
+  --card:#101e33;
+  --line:#20314b;
+  --text:#fff;
+  --muted:#9db0c9;
+  --accent:#a78bfa;
 }
-*{box-sizing:border-box}
+
+*{
+  box-sizing:border-box;
+}
 
 body{
- margin:0;
- background:linear-gradient(180deg,#07111f,#091524);
- color:var(--text);
- font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
- min-height:100vh;
+  margin:0;
+  background:linear-gradient(180deg,#07111f,#091524);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  min-height:100vh;
 }
 
-button,input{font:inherit}
+button,
+input{
+  font:inherit;
+}
 
 .app{
- max-width:1180px;
- margin:auto;
- padding:18px 18px 100px;
+  max-width:1180px;
+  margin:auto;
+  padding:18px 18px 100px;
 }
 
+/* HEADER */
+
 header{
- display:flex;
- justify-content:space-between;
- align-items:center;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 
 .brand{
- font-size:29px;
- font-weight:900;
+  font-size:29px;
+  font-weight:900;
 }
 
-.brand span{color:var(--accent)}
+.brand span{
+  color:var(--accent);
+}
 
 .profile{
- width:42px;
- height:42px;
- border-radius:50%;
- display:grid;
- place-items:center;
- background:linear-gradient(135deg,#7c3aed,#0ea5e9);
- font-weight:900;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#7c3aed,#0ea5e9);
+  font-weight:900;
 }
 
+/* HERO */
+
 .hero{
- margin:20px 0 18px;
- padding:26px;
- border-radius:26px;
- background:
- radial-gradient(circle at 80% 15%,rgba(167,139,250,.3),transparent 28%),
- linear-gradient(135deg,#10213a,#231442);
- border:1px solid rgba(255,255,255,.07);
+  margin:20px 0 18px;
+  padding:26px;
+  border-radius:26px;
+
+  background:
+  radial-gradient(
+    circle at 80% 15%,
+    rgba(167,139,250,.30),
+    transparent 28%
+  ),
+  linear-gradient(
+    135deg,
+    #10213a,
+    #231442
+  );
+
+  border:1px solid rgba(255,255,255,.07);
 }
 
 .hero h1{
- font-size:clamp(2rem,7vw,4rem);
- line-height:1;
- margin:8px 0 12px;
+  font-size:clamp(2rem,7vw,4rem);
+  line-height:1;
+  margin:8px 0 12px;
 }
 
 .muted{
- color:var(--muted);
- line-height:1.5;
+  color:var(--muted);
+  line-height:1.5;
 }
 
-.actions,.driveChooser{
- display:flex;
- gap:10px;
- flex-wrap:wrap;
- margin-top:18px;
+.actions,
+.driveChooser{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:18px;
 }
 
 .btn{
- border:0;
- border-radius:14px;
- padding:12px 16px;
- font-weight:800;
- cursor:pointer;
+  border:0;
+  border-radius:14px;
+  padding:12px 16px;
+  font-weight:800;
+  cursor:pointer;
 }
 
 .primary{
- background:#fff;
- color:#111827;
+  background:#fff;
+  color:#111827;
 }
 
 .secondary{
- background:#17263d;
- color:#fff;
- border:1px solid var(--line);
+  background:#17263d;
+  color:#fff;
+  border:1px solid var(--line);
 }
+
+/* MENSAJES */
 
 .notice{
- display:none;
- margin-top:14px;
- padding:13px 14px;
- border-radius:14px;
- background:#0c2139;
- color:#cbe9ff;
- white-space:pre-line;
+  display:none;
+  margin-top:14px;
+  padding:13px 14px;
+  border-radius:14px;
+  background:#0c2139;
+  color:#cbe9ff;
+  white-space:pre-line;
 }
 
+/* NAVEGACIÓN CARPETAS */
+
 .breadcrumb{
- display:none;
- align-items:center;
- gap:10px;
- margin:16px 0;
- padding:12px;
- border-radius:14px;
- background:#0c182a;
- border:1px solid var(--line);
+  display:none;
+  align-items:center;
+  gap:10px;
+  margin:16px 0;
+  padding:12px;
+  border-radius:14px;
+  background:#0c182a;
+  border:1px solid var(--line);
 }
 
 .breadcrumb button{
- border:0;
- background:#17263d;
- color:white;
- border-radius:10px;
- padding:9px 13px;
- font-weight:800;
+  border:0;
+  background:#17263d;
+  color:white;
+  border-radius:10px;
+  padding:9px 13px;
+  font-weight:800;
 }
 
 .breadcrumb span{
- color:#cbd5e1;
- overflow:hidden;
- text-overflow:ellipsis;
- white-space:nowrap;
+  color:#cbd5e1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
+
+/* SEARCH */
 
 .search{
- width:100%;
- padding:14px 16px;
- background:#091426;
- color:#fff;
- border:1px solid var(--line);
- border-radius:14px;
- font-size:16px;
+  width:100%;
+  padding:14px 16px;
+  background:#091426;
+  color:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  font-size:16px;
 }
 
+/* TABS */
+
 .tabs{
- display:flex;
- gap:8px;
- overflow:auto;
- margin:16px 0;
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  margin:16px 0;
 }
 
 .tabs button{
- white-space:nowrap;
- background:#122038;
- color:#b9c8da;
- border:1px solid var(--line);
- padding:10px 13px;
- border-radius:999px;
+  white-space:nowrap;
+  background:#122038;
+  color:#b9c8da;
+  border:1px solid var(--line);
+  padding:10px 13px;
+  border-radius:999px;
 }
 
 .tabs button.active{
- background:#fff;
- color:#111827;
+  background:#fff;
+  color:#111827;
 }
 
+/* SECTION */
+
 .section-head{
- display:flex;
- justify-content:space-between;
- align-items:center;
- margin:22px 0 12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:22px 0 12px;
 }
 
 .section-head h2{
- margin:0;
- font-size:20px;
+  margin:0;
+  font-size:20px;
 }
 
 .section-head span{
- color:var(--muted);
- font-size:13px;
+  color:var(--muted);
+  font-size:13px;
 }
 
+/* GRID */
+
 .grid{
- display:grid;
- grid-template-columns:repeat(2,minmax(0,1fr));
- gap:13px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px;
 }
 
 @media(min-width:700px){
- .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+  .grid{
+    grid-template-columns:
+    repeat(4,minmax(0,1fr));
+  }
+
 }
 
 @media(min-width:1050px){
- .grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+
+  .grid{
+    grid-template-columns:
+    repeat(6,minmax(0,1fr));
+  }
+
 }
 
+/* CARDS */
+
 .card{
- background:var(--card);
- border:1px solid var(--line);
- border-radius:18px;
- overflow:hidden;
- cursor:pointer;
- position:relative;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  position:relative;
 }
 
 .poster{
- aspect-ratio:2/3;
- display:grid;
- place-items:center;
- padding:12px;
- text-align:center;
- font-weight:850;
- background:linear-gradient(145deg,#273c55,#121c2d);
- overflow:hidden;
+  aspect-ratio:2/3;
+  display:grid;
+  place-items:center;
+  padding:12px;
+  text-align:center;
+  font-weight:850;
+
+  background:
+  linear-gradient(
+    145deg,
+    #273c55,
+    #121c2d
+  );
+
+  overflow:hidden;
 }
 
 .folderPoster{
- background:linear-gradient(145deg,#243a5e,#151f35);
- font-size:16px;
+  background:
+  linear-gradient(
+    145deg,
+    #243a5e,
+    #151f35
+  );
 }
 
 .folderIcon{
- font-size:50px;
- display:block;
- margin-bottom:10px;
+  display:block;
+  font-size:52px;
+  margin-bottom:10px;
 }
 
-.meta{padding:11px}
+.movieIcon{
+  display:block;
+  font-size:46px;
+  margin-bottom:10px;
+}
+
+.meta{
+  padding:11px;
+}
 
 .title{
- font-weight:850;
- white-space:nowrap;
- overflow:hidden;
- text-overflow:ellipsis;
+  font-weight:850;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .small{
- font-size:12px;
- color:var(--muted);
- margin-top:4px;
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
 }
 
 .heart{
- position:absolute;
- right:8px;
- top:8px;
- width:36px;
- height:36px;
- border-radius:50%;
- border:0;
- background:rgba(0,0,0,.5);
- color:white;
- font-size:18px;
+  position:absolute;
+  right:8px;
+  top:8px;
+
+  width:36px;
+  height:36px;
+
+  border-radius:50%;
+  border:0;
+
+  background:rgba(0,0,0,.55);
+  color:white;
+
+  font-size:18px;
+
+  z-index:2;
 }
 
+/* NAV */
+
 nav{
- position:fixed;
- left:12px;
- right:12px;
- bottom:10px;
- max-width:760px;
- margin:auto;
- background:rgba(8,18,32,.94);
- backdrop-filter:blur(14px);
- border:1px solid var(--line);
- border-radius:18px;
- padding:8px;
- display:grid;
- grid-template-columns:repeat(4,1fr);
- z-index:50;
+  position:fixed;
+  left:12px;
+  right:12px;
+  bottom:10px;
+
+  max-width:760px;
+  margin:auto;
+
+  background:rgba(8,18,32,.94);
+  backdrop-filter:blur(14px);
+
+  border:1px solid var(--line);
+  border-radius:18px;
+
+  padding:8px;
+
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+
+  z-index:50;
 }
 
 nav button{
- background:none;
- border:0;
- color:#aab7c9;
- padding:8px 2px;
- font-size:12px;
+  background:none;
+  border:0;
+  color:#aab7c9;
+  padding:8px 2px;
+  font-size:12px;
 }
 
-nav button.active{color:white}
+nav button.active{
+  color:white;
+}
+
+/* PLAYER */
 
 dialog{
- width:min(95vw,960px);
- border:0;
- border-radius:22px;
- padding:0;
- background:#07111f;
- color:white;
+  width:min(95vw,960px);
+  border:0;
+  border-radius:22px;
+  padding:0;
+
+  background:#07111f;
+  color:white;
+
+  overflow:hidden;
 }
 
 dialog::backdrop{
- background:rgba(0,0,0,.78);
+  background:rgba(0,0,0,.80);
 }
 
-video{
- width:100%;
- background:#000;
- max-height:72vh;
+#drivePlayer{
+  width:100%;
+  height:min(70vh,600px);
+  border:0;
+  background:#000;
+  display:block;
 }
 
-.dlg{padding:16px}
+.dlg{
+  padding:16px;
+}
 
 .empty{
- padding:30px;
- text-align:center;
- color:var(--muted);
- grid-column:1/-1;
+  padding:30px;
+  text-align:center;
+  color:var(--muted);
+  grid-column:1/-1;
 }
+
 </style>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script
+  src="https://accounts.google.com/gsi/client"
+  async
+  defer>
+</script>
+
 <script src="config.js"></script>
+
 </head>
 
 <body>
@@ -328,900 +428,1762 @@ video{
 <div class="app">
 
 <header>
- <div class="brand">Cine<span>Kids</span></div>
- <div class="profile">CK</div>
+
+  <div class="brand">
+    Cine<span>Kids</span>
+  </div>
+
+  <div class="profile">
+    CK
+  </div>
+
 </header>
+
 
 <section class="hero">
 
-<div class="muted">Tu cine familiar</div>
+  <div class="muted">
+    Tu cine familiar
+  </div>
 
-<h1>Películas desde tu Google Drive</h1>
+  <h1>
+    Películas desde tu Google Drive
+  </h1>
 
-<div class="muted">
-Explora tus unidades, carpetas y películas desde CineKids.
-</div>
+  <div class="muted">
+    Explora tus unidades compartidas,
+    carpetas y películas desde CineKids.
+  </div>
 
-<div class="actions">
- <button class="btn primary" id="loginBtn" onclick="googleLogin()">
- Continuar con Google
- </button>
+  <div class="actions">
 
- <button class="btn secondary" onclick="installApp()">
- Instalar CineKids
- </button>
+    <button
+      class="btn primary"
+      id="loginBtn"
+      onclick="googleLogin()">
 
- <button class="btn secondary" onclick="logout()">
- Cerrar sesión
- </button>
-</div>
+      Continuar con Google
 
-<div id="notice" class="notice"></div>
+    </button>
 
-<div id="driveChooser" class="driveChooser"></div>
+    <button
+      class="btn secondary"
+      onclick="installApp()">
+
+      Instalar CineKids
+
+    </button>
+
+    <button
+      class="btn secondary"
+      onclick="logout()">
+
+      Cerrar sesión
+
+    </button>
+
+  </div>
+
+  <div
+    id="notice"
+    class="notice">
+  </div>
+
+  <div
+    id="driveChooser"
+    class="driveChooser">
+  </div>
 
 </section>
 
-<div id="breadcrumb" class="breadcrumb">
- <button onclick="goBack()">← Atrás</button>
- <span id="pathName"></span>
+
+<div
+  id="breadcrumb"
+  class="breadcrumb">
+
+  <button onclick="goBack()">
+    ← Atrás
+  </button>
+
+  <span id="pathName"></span>
+
 </div>
+
 
 <input
- id="search"
- class="search"
- placeholder="Buscar carpeta o película…"
- oninput="render()"
+  id="search"
+  class="search"
+  placeholder="Buscar carpeta o película…"
+  oninput="render()"
 >
 
+
 <div class="tabs">
- <button class="active" onclick="setFilter('Todos',this)">Todos</button>
- <button onclick="setFilter('Animación',this)">Animación</button>
- <button onclick="setFilter('Familiar',this)">Familiar</button>
- <button onclick="showFavorites(this)">Favoritos</button>
+
+  <button
+    class="active"
+    onclick="setFilter('Todos',this)">
+
+    Todos
+
+  </button>
+
+  <button
+    onclick="setFilter('Animación',this)">
+
+    Animación
+
+  </button>
+
+  <button
+    onclick="setFilter('Familiar',this)">
+
+    Familiar
+
+  </button>
+
+  <button
+    onclick="showFavorites(this)">
+
+    Favoritos
+
+  </button>
+
 </div>
+
 
 <div class="section-head">
- <h2 id="sectionTitle">Catálogo</h2>
- <span id="count"></span>
+
+  <h2 id="sectionTitle">
+    Catálogo
+  </h2>
+
+  <span id="count"></span>
+
 </div>
 
-<div id="grid" class="grid"></div>
+
+<div
+  id="grid"
+  class="grid">
+</div>
+
 
 </div>
+
 
 <nav>
- <button class="active" onclick="home()">⌂<br>Inicio</button>
- <button onclick="setFilter('Animación',this)">🧸<br>Animación</button>
- <button onclick="showFavorites(this)">♡<br>Favoritos</button>
- <button onclick="settings()">⚙<br>Ajustes</button>
+
+  <button
+    class="active"
+    onclick="home()">
+
+    ⌂
+    <br>
+    Inicio
+
+  </button>
+
+  <button
+    onclick="setFilter('Animación',this)">
+
+    🧸
+    <br>
+    Animación
+
+  </button>
+
+  <button
+    onclick="showFavorites(this)">
+
+    ♡
+    <br>
+    Favoritos
+
+  </button>
+
+  <button
+    onclick="settings()">
+
+    ⚙
+    <br>
+    Ajustes
+
+  </button>
+
 </nav>
+
 
 <dialog id="player">
 
-<video id="video" controls playsinline></video>
+  <iframe
+    id="drivePlayer"
+    allow="autoplay; fullscreen"
+    allowfullscreen>
+  </iframe>
 
-<div class="dlg">
- <h2 id="ptitle"></h2>
- <div id="pmeta" class="muted"></div>
+  <div class="dlg">
 
- <div class="actions">
-  <button class="btn secondary" onclick="closePlayer()">Cerrar</button>
- </div>
-</div>
+    <h2 id="ptitle"></h2>
+
+    <div
+      id="pmeta"
+      class="muted">
+    </div>
+
+    <div class="actions">
+
+      <button
+        class="btn secondary"
+        onclick="closePlayer()">
+
+        Cerrar
+
+      </button>
+
+    </div>
+
+  </div>
 
 </dialog>
 
+
 <script>
 
+/* ==========================================
+   ESTADO
+========================================== */
+
 let tokenClient;
+
 let accessToken=null;
 
 let items=[];
+
 let movies=[];
 
 let filter='Todos';
+
 let onlyFav=false;
 
 let deferredPrompt=null;
-let currentObjectUrl=null;
 
 let currentDrive=null;
+
 let navigation=[];
 
-const fav=new Set(
- JSON.parse(localStorage.getItem('ck_fav')||'[]')
+
+const fav=
+new Set(
+  JSON.parse(
+    localStorage.getItem('ck_fav')||'[]'
+  )
 );
 
-const notice=document.getElementById('notice');
-const grid=document.getElementById('grid');
-const count=document.getElementById('count');
-const search=document.getElementById('search');
-const sectionTitle=document.getElementById('sectionTitle');
-const breadcrumb=document.getElementById('breadcrumb');
-const pathName=document.getElementById('pathName');
+
+const notice=
+document.getElementById('notice');
+
+const grid=
+document.getElementById('grid');
+
+const count=
+document.getElementById('count');
+
+const search=
+document.getElementById('search');
+
+const sectionTitle=
+document.getElementById('sectionTitle');
+
+const breadcrumb=
+document.getElementById('breadcrumb');
+
+const pathName=
+document.getElementById('pathName');
+
 
 function msg(t){
- notice.style.display='block';
- notice.textContent=t;
+
+  notice.style.display='block';
+
+  notice.textContent=t;
+
 }
 
-/* ==============================
-   GOOGLE LOGIN
-================================ */
+
+/* ==========================================
+   GOOGLE OAUTH
+========================================== */
 
 function initGoogle(){
 
- if(!window.google?.accounts?.oauth2)return;
+  if(!window.google?.accounts?.oauth2){
 
- const id=window.CINEKIDS?.GOOGLE_CLIENT_ID||'';
+    setTimeout(
+      initGoogle,
+      400
+    );
 
- if(!id||id.includes('PON_AQUI'))return;
-
- tokenClient=google.accounts.oauth2.initTokenClient({
-
-  client_id:id,
-
-  scope:'https://www.googleapis.com/auth/drive.readonly',
-
-  callback:async r=>{
-
-   if(r.error){
-    msg('Error de autenticación: '+r.error);
     return;
-   }
 
-   accessToken=r.access_token;
-
-   document.getElementById('loginBtn').textContent=
-   'Google conectado';
-
-   msg('Cuenta conectada. Buscando unidades compartidas…');
-
-   await loadSharedDrives();
   }
- });
+
+
+  const id=
+  window.CINEKIDS?.GOOGLE_CLIENT_ID||'';
+
+
+  if(
+    !id ||
+    id.includes('PON_AQUI')
+  ){
+
+    return;
+
+  }
+
+
+  tokenClient=
+  google.accounts.oauth2.initTokenClient({
+
+    client_id:id,
+
+    scope:
+    'https://www.googleapis.com/auth/drive.readonly',
+
+    callback:
+    async r=>{
+
+      if(r.error){
+
+        msg(
+          'Error de autenticación: '+
+          r.error
+        );
+
+        return;
+
+      }
+
+
+      accessToken=
+      r.access_token;
+
+
+      document
+      .getElementById('loginBtn')
+      .textContent=
+      'Google conectado';
+
+
+      msg(
+        'Cuenta conectada. Buscando unidades compartidas…'
+      );
+
+
+      await loadSharedDrives();
+
+    }
+
+  });
+
 }
 
+
 addEventListener(
- 'load',
- ()=>setTimeout(initGoogle,600)
+  'load',
+  ()=>setTimeout(initGoogle,600)
 );
+
 
 function googleLogin(){
 
- const id=
- window.CINEKIDS?.GOOGLE_CLIENT_ID||'';
+  const id=
+  window.CINEKIDS?.GOOGLE_CLIENT_ID||'';
 
- if(!id||id.includes('PON_AQUI')){
 
-  msg(
-   'Falta conectar Google OAuth. Revisa config.js.'
-  );
+  if(
+    !id ||
+    id.includes('PON_AQUI')
+  ){
 
-  return;
- }
+    msg(
+      'Falta conectar Google OAuth. Revisa config.js.'
+    );
 
- if(!tokenClient)initGoogle();
+    return;
 
- if(tokenClient){
+  }
 
-  tokenClient.requestAccessToken({
-   prompt:'consent'
-  });
 
- }else{
+  if(!tokenClient){
 
-  msg(
-   'Google todavía está cargando. Intenta nuevamente.'
-  );
- }
+    initGoogle();
+
+  }
+
+
+  if(tokenClient){
+
+    tokenClient
+    .requestAccessToken({
+      prompt:'consent'
+    });
+
+  }else{
+
+    msg(
+      'Google todavía está cargando. Intenta nuevamente.'
+    );
+
+  }
+
 }
 
-/* ==============================
-   DRIVE API
-================================ */
+
+/* ==========================================
+   GOOGLE DRIVE API
+========================================== */
 
 async function api(path){
 
- const r=await fetch(
-  'https://www.googleapis.com/drive/v3/'+path,
-  {
-   headers:{
-    Authorization:'Bearer '+accessToken
-   }
+  const response=
+  await fetch(
+
+    'https://www.googleapis.com/drive/v3/'+path,
+
+    {
+
+      headers:{
+
+        Authorization:
+        'Bearer '+accessToken
+
+      }
+
+    }
+
+  );
+
+
+  if(!response.ok){
+
+    throw new Error(
+      await response.text()
+    );
+
   }
- );
 
- if(!r.ok)
-  throw new Error(await r.text());
 
- return r.json();
+  return response.json();
+
 }
 
-/* ==============================
-   SHARED DRIVES
-================================ */
+
+/* ==========================================
+   UNIDADES COMPARTIDAS
+========================================== */
 
 async function loadSharedDrives(){
 
- if(!accessToken)return;
+  if(!accessToken)return;
 
- try{
 
-  const data=
-  await api('drives?pageSize=100');
+  try{
 
-  const chooser=
-  document.getElementById('driveChooser');
+    const allDrives=[];
 
-  chooser.innerHTML='';
+    let pageToken='';
 
-  const drives=data.drives||[];
 
-  drives.forEach(d=>{
+    do{
 
-   const b=document.createElement('button');
+      let path=
+      'drives?pageSize=100';
 
-   b.className='btn secondary';
 
-   b.textContent=d.name;
+      if(pageToken){
 
-   b.onclick=()=>openDrive(d);
+        path+=
+        '&pageToken='+
+        encodeURIComponent(pageToken);
 
-   chooser.appendChild(b);
-  });
+      }
 
-  msg(
-   `Encontradas ${drives.length} unidades compartidas. Elige una para explorarla.`
-  );
 
- }catch(e){
+      const data=
+      await api(path);
 
-  msg(
-   'No se pudieron leer las unidades compartidas: '+
-   e.message
-  );
- }
+
+      allDrives.push(
+        ...(data.drives||[])
+      );
+
+
+      pageToken=
+      data.nextPageToken||'';
+
+
+    }while(pageToken);
+
+
+    const chooser=
+    document.getElementById(
+      'driveChooser'
+    );
+
+
+    chooser.innerHTML='';
+
+
+    allDrives.forEach(d=>{
+
+      const button=
+      document.createElement(
+        'button'
+      );
+
+
+      button.className=
+      'btn secondary';
+
+
+      button.textContent=
+      d.name;
+
+
+      button.onclick=
+      ()=>openDrive(d);
+
+
+      chooser.appendChild(
+        button
+      );
+
+    });
+
+
+    msg(
+      `Encontradas ${allDrives.length} unidades compartidas. Elige una para explorarla.`
+    );
+
+
+  }catch(e){
+
+    msg(
+      'No se pudieron leer las unidades compartidas: '+
+      e.message
+    );
+
+  }
+
 }
 
-/* ==============================
+
+/* ==========================================
    ABRIR UNIDAD
-================================ */
+========================================== */
 
 async function openDrive(drive){
 
- currentDrive=drive;
+  currentDrive=
+  drive;
 
- navigation=[
-  {
-   id:drive.id,
-   name:drive.name,
-   root:true
-  }
- ];
 
- document.getElementById('driveChooser').innerHTML='';
+  navigation=[
 
- breadcrumb.style.display='flex';
+    {
 
- await loadFolder(
-  drive.id,
-  drive.name,
-  true
- );
+      id:drive.id,
+
+      name:drive.name,
+
+      root:true
+
+    }
+
+  ];
+
+
+  document
+  .getElementById(
+    'driveChooser'
+  )
+  .innerHTML='';
+
+
+  breadcrumb
+  .style
+  .display='flex';
+
+
+  await loadFolder(
+
+    drive.id,
+
+    drive.name,
+
+    true
+
+  );
+
 }
 
-/* ==============================
+
+/* ==========================================
    CARGAR CARPETA
-================================ */
+========================================== */
 
 async function loadFolder(
- folderId,
- folderName,
- isRoot=false
+
+  folderId,
+
+  folderName,
+
+  isRoot=false
+
 ){
 
- if(!currentDrive)return;
+  if(!currentDrive)return;
 
- msg('Abriendo '+folderName+'…');
-
- pathName.textContent=
- navigation.map(x=>x.name).join(' › ');
-
- sectionTitle.textContent=folderName;
-
- try{
-
-  let pageToken='';
-
-  const result=[];
-
-  do{
-
-   let query;
-
-   if(isRoot){
-
-    query=
-    `'${currentDrive.id}' in parents and trashed = false`;
-
-   }else{
-
-    query=
-    `'${folderId}' in parents and trashed = false`;
-   }
-
-   const q=encodeURIComponent(query);
-
-   const fields=encodeURIComponent(
-    'nextPageToken,files(id,name,mimeType,size,modifiedTime,parents,webContentLink,thumbnailLink)'
-   );
-
-   let path=
-   `files?corpora=drive`+
-   `&driveId=${encodeURIComponent(currentDrive.id)}`+
-   `&includeItemsFromAllDrives=true`+
-   `&supportsAllDrives=true`+
-   `&pageSize=1000`+
-   `&q=${q}`+
-   `&fields=${fields}`+
-   `&orderBy=folder,name`;
-
-   if(pageToken){
-
-    path+=
-    '&pageToken='+
-    encodeURIComponent(pageToken);
-   }
-
-   const data=
-   await api(path);
-
-   result.push(...(data.files||[]));
-
-   pageToken=
-   data.nextPageToken||'';
-
-  }while(pageToken);
-
-  items=result;
-
-  movies=result
-   .filter(f=>looksLikeMovie(
-    f.name,
-    f.mimeType
-   ))
-   .map(f=>({
-    ...f,
-    cat:'Familiar'
-   }));
-
-  render();
-
-  const folders=result.filter(
-   f=>isFolder(f)
-  ).length;
 
   msg(
-   `${folderName}: ${folders} carpetas y ${movies.length} películas.`
+    'Abriendo '+
+    folderName+
+    '…'
   );
 
- }catch(e){
 
-  msg(
-   'Error al abrir la carpeta: '+
-   e.message
-  );
- }
+  pathName.textContent=
+
+  navigation
+  .map(x=>x.name)
+  .join(' › ');
+
+
+  sectionTitle.textContent=
+  folderName;
+
+
+  try{
+
+    const result=[];
+
+    let pageToken='';
+
+
+    do{
+
+      const query=
+
+      `'${folderId}' in parents and trashed = false`;
+
+
+      const q=
+      encodeURIComponent(
+        query
+      );
+
+
+      const fields=
+      encodeURIComponent(
+
+        'nextPageToken,'+
+
+        'files('+
+        'id,'+
+        'name,'+
+        'mimeType,'+
+        'size,'+
+        'modifiedTime,'+
+        'parents,'+
+        'thumbnailLink,'+
+        'webViewLink'+
+        ')'
+
+      );
+
+
+      let path=
+
+      `files?`+
+
+      `corpora=drive`+
+
+      `&driveId=${
+        encodeURIComponent(
+          currentDrive.id
+        )
+      }`+
+
+      `&includeItemsFromAllDrives=true`+
+
+      `&supportsAllDrives=true`+
+
+      `&pageSize=1000`+
+
+      `&q=${q}`+
+
+      `&fields=${fields}`+
+
+      `&orderBy=folder,name`;
+
+
+      if(pageToken){
+
+        path+=
+        '&pageToken='+
+        encodeURIComponent(
+          pageToken
+        );
+
+      }
+
+
+      const data=
+      await api(path);
+
+
+      result.push(
+        ...(data.files||[])
+      );
+
+
+      pageToken=
+      data.nextPageToken||'';
+
+
+    }while(pageToken);
+
+
+    items=
+    result;
+
+
+    movies=
+
+    result
+    .filter(
+      f=>looksLikeMovie(
+        f.name,
+        f.mimeType
+      )
+    )
+    .map(
+      f=>({
+
+        ...f,
+
+        cat:
+        detectCategory(
+          f.name
+        )
+
+      })
+    );
+
+
+    render();
+
+
+    const folders=
+
+    result.filter(
+      isFolder
+    ).length;
+
+
+    msg(
+
+      `${folderName}: `+
+      `${folders} carpetas · `+
+      `${movies.length} películas.`
+
+    );
+
+
+  }catch(e){
+
+    msg(
+      'Error al abrir la carpeta: '+
+      e.message
+    );
+
+  }
+
 }
 
-/* ==============================
+
+/* ==========================================
    CARPETAS
-================================ */
+========================================== */
 
 function isFolder(f){
 
- return f.mimeType===
- 'application/vnd.google-apps.folder';
+  return(
+
+    f.mimeType===
+
+    'application/vnd.google-apps.folder'
+
+  );
+
 }
 
-async function openFolder(id,name){
 
- navigation.push({
-  id,
-  name,
-  root:false
- });
+async function openFolder(
 
- await loadFolder(
   id,
-  name,
-  false
- );
+
+  encodedName
+
+){
+
+  const name=
+  decodeURIComponent(
+    encodedName
+  );
+
+
+  navigation.push({
+
+    id,
+
+    name,
+
+    root:false
+
+  });
+
+
+  await loadFolder(
+
+    id,
+
+    name,
+
+    false
+
+  );
+
 }
+
 
 async function goBack(){
 
- if(navigation.length<=1){
+  if(
+    navigation.length<=1
+  ){
 
-  navigation=[];
-  currentDrive=null;
-  items=[];
-  movies=[];
+    navigation=[];
 
-  breadcrumb.style.display='none';
+    currentDrive=null;
 
-  sectionTitle.textContent='Catálogo';
+    items=[];
 
-  render();
+    movies=[];
 
-  await loadSharedDrives();
 
-  return;
- }
+    breadcrumb
+    .style
+    .display='none';
 
- navigation.pop();
 
- const previous=
- navigation[navigation.length-1];
+    pathName
+    .textContent='';
 
- await loadFolder(
-  previous.id,
-  previous.name,
-  previous.root
- );
+
+    sectionTitle
+    .textContent=
+    'Catálogo';
+
+
+    render();
+
+
+    await loadSharedDrives();
+
+
+    return;
+
+  }
+
+
+  navigation.pop();
+
+
+  const previous=
+
+  navigation[
+    navigation.length-1
+  ];
+
+
+  await loadFolder(
+
+    previous.id,
+
+    previous.name,
+
+    previous.root
+
+  );
+
 }
 
-/* ==============================
-   DETECTAR PELÍCULAS
-================================ */
 
-function looksLikeMovie(name,mime){
+/* ==========================================
+   DETECCIÓN DE VIDEOS
+========================================== */
 
- if(
-  mime===
-  'application/vnd.google-apps.folder'
- )return false;
+function looksLikeMovie(
 
- return(
-  (mime||'').startsWith('video/')||
-  /\.(mp4|mkv|avi|mov|m4v|webm)$/i.test(name)
- );
+  name,
+
+  mime
+
+){
+
+  if(
+
+    mime===
+
+    'application/vnd.google-apps.folder'
+
+  ){
+
+    return false;
+
+  }
+
+
+  return(
+
+    (mime||'')
+    .startsWith('video/')
+
+    ||
+
+    /\.(mp4|mkv|avi|mov|m4v|webm|mpeg|mpg)$/i
+    .test(name||'')
+
+  );
+
 }
 
-function cleanTitle(n){
 
- return n
- .replace(
-  /\.(mp4|mkv|avi|mov|m4v|webm)$/i,
-  ''
- )
- .replace(/[._]/g,' ');
+/* ==========================================
+   LIMPIEZA DE TÍTULOS
+========================================== */
+
+function cleanTitle(name){
+
+  return String(name||'')
+
+  .replace(
+
+    /\.(mp4|mkv|avi|mov|m4v|webm|mpeg|mpg)$/i,
+
+    ''
+
+  )
+
+  .replace(
+    /[._]+/g,
+    ' '
+  )
+
+  .replace(
+    /\s+/g,
+    ' '
+  )
+
+  .trim();
+
 }
 
-/* ==============================
-   CATÁLOGO
-================================ */
+
+/* ==========================================
+   CATEGORÍAS BÁSICAS
+========================================== */
+
+function detectCategory(name){
+
+  const n=
+  String(name||'')
+  .toLowerCase();
+
+
+  if(
+
+    n.includes('animacion') ||
+
+    n.includes('animación') ||
+
+    n.includes('cartoon') ||
+
+    n.includes('disney') ||
+
+    n.includes('pixar')
+
+  ){
+
+    return 'Animación';
+
+  }
+
+
+  return 'Familiar';
+
+}
+
+
+/* ==========================================
+   RENDER CATÁLOGO
+========================================== */
 
 function render(){
 
- const q=
- search.value.toLowerCase().trim();
+  const q=
 
- let folders=
- items.filter(isFolder);
-
- folders=folders.filter(
-  f=>f.name.toLowerCase().includes(q)
- );
-
- let movieList=
- movies.filter(m=>
-
-  (filter==='Todos'||m.cat===filter)
-
-  &&
-
-  (!onlyFav||fav.has(m.id))
-
-  &&
-
-  cleanTitle(m.name)
+  search
+  .value
   .toLowerCase()
-  .includes(q)
- );
+  .trim();
 
- if(onlyFav){
-  folders=[];
- }
 
- count.textContent=
- `${folders.length} carpetas · ${movieList.length} películas`;
+  let folders=
 
- let html='';
+  items
+  .filter(isFolder)
+  .filter(
 
- html+=folders.map(f=>`
+    f=>
 
- <article
-  class="card"
-  onclick="openFolder('${f.id}',${JSON.stringify(f.name).replace(/"/g,'&quot;')})"
- >
+    String(f.name||'')
+    .toLowerCase()
+    .includes(q)
 
-  <div class="poster folderPoster">
+  );
 
-   <div>
-    <span class="folderIcon">📁</span>
-    ${escapeHtml(f.name)}
-   </div>
 
-  </div>
+  let movieList=
 
-  <div class="meta">
+  movies.filter(m=>
 
-   <div class="title">
-    ${escapeHtml(f.name)}
-   </div>
+    (
 
-   <div class="small">
-    Carpeta
-   </div>
+      filter==='Todos'
 
-  </div>
+      ||
 
- </article>
+      m.cat===filter
 
- `).join('');
+    )
 
- html+=movieList.map(m=>`
+    &&
 
- <article
-  class="card"
-  onclick="openMovie('${m.id}')"
- >
+    (
 
-  <button
-   class="heart"
-   onclick="
-    event.stopPropagation();
-    toggleFav('${m.id}')
-   "
-  >
-   ${fav.has(m.id)?'♥':'♡'}
-  </button>
+      !onlyFav
 
-  <div class="poster">
+      ||
 
-   🎬
-   <br>
+      fav.has(m.id)
 
-   ${escapeHtml(cleanTitle(m.name))}
+    )
 
-  </div>
+    &&
 
-  <div class="meta">
+    cleanTitle(m.name)
+    .toLowerCase()
+    .includes(q)
 
-   <div class="title">
-    ${escapeHtml(cleanTitle(m.name))}
-   </div>
+  );
 
-   <div class="small">
-    ${escapeHtml(m.mimeType||'video')}
-   </div>
 
-  </div>
+  if(onlyFav){
 
- </article>
+    folders=[];
 
- `).join('');
+  }
 
- if(!html){
 
-  html=
-  `<div class="empty">${
-   accessToken
-   ?'Esta carpeta está vacía o no contiene videos compatibles.'
-   :'Conecta Google para cargar tu catálogo.'
-  }</div>`;
- }
+  count.textContent=
 
- grid.innerHTML=html;
+  `${folders.length} carpetas · ${movieList.length} películas`;
+
+
+  let html='';
+
+
+  /* CARPETAS */
+
+  html+=
+
+  folders
+  .map(f=>{
+
+    const encodedName=
+    encodeURIComponent(
+      f.name
+    );
+
+
+    return `
+
+    <article
+      class="card"
+      onclick="openFolder(
+        '${f.id}',
+        '${encodedName}'
+      )">
+
+      <div
+        class="poster folderPoster">
+
+        <div>
+
+          <span class="folderIcon">
+            📁
+          </span>
+
+          ${escapeHtml(
+            f.name
+          )}
+
+        </div>
+
+      </div>
+
+      <div class="meta">
+
+        <div class="title">
+
+          ${escapeHtml(
+            f.name
+          )}
+
+        </div>
+
+        <div class="small">
+          Carpeta
+        </div>
+
+      </div>
+
+    </article>
+
+    `;
+
+  })
+  .join('');
+
+
+  /* PELÍCULAS */
+
+  html+=
+
+  movieList
+  .map(m=>`
+
+    <article
+      class="card"
+      onclick="
+        openMovie(
+          '${m.id}'
+        )
+      ">
+
+      <button
+        class="heart"
+        onclick="
+          event.stopPropagation();
+          toggleFav(
+            '${m.id}'
+          )
+        ">
+
+        ${
+          fav.has(m.id)
+          ?'♥'
+          :'♡'
+        }
+
+      </button>
+
+      <div class="poster">
+
+        <div>
+
+          <span class="movieIcon">
+            🎬
+          </span>
+
+          ${escapeHtml(
+            cleanTitle(
+              m.name
+            )
+          )}
+
+        </div>
+
+      </div>
+
+      <div class="meta">
+
+        <div class="title">
+
+          ${escapeHtml(
+            cleanTitle(
+              m.name
+            )
+          )}
+
+        </div>
+
+        <div class="small">
+
+          ${
+            escapeHtml(
+              m.mimeType||
+              'video'
+            )
+          }
+
+        </div>
+
+      </div>
+
+    </article>
+
+  `)
+  .join('');
+
+
+  if(!html){
+
+    html=
+
+    `<div class="empty">${
+      accessToken
+      ?'Esta carpeta está vacía o no contiene videos compatibles.'
+      :'Conecta Google para cargar tu catálogo.'
+    }</div>`;
+
+  }
+
+
+  grid.innerHTML=
+  html;
+
 }
+
+
+/* ==========================================
+   SEGURIDAD HTML
+========================================== */
 
 function escapeHtml(s){
 
- return String(s).replace(
-  /[&<>"']/g,
-  c=>({
-   '&':'&amp;',
-   '<':'&lt;',
-   '>':'&gt;',
-   '"':'&quot;',
-   "'":'&#39;'
-  }[c])
- );
+  return String(s)
+
+  .replace(
+
+    /[&<>"']/g,
+
+    c=>({
+
+      '&':'&amp;',
+
+      '<':'&lt;',
+
+      '>':'&gt;',
+
+      '"':'&quot;',
+
+      "'":'&#39;'
+
+    }[c])
+
+  );
+
 }
 
-/* ==============================
+
+/* ==========================================
    FAVORITOS
-================================ */
+========================================== */
 
 function toggleFav(id){
 
- fav.has(id)
- ?fav.delete(id)
- :fav.add(id);
+  if(
+    fav.has(id)
+  ){
 
- localStorage.setItem(
-  'ck_fav',
-  JSON.stringify([...fav])
- );
+    fav.delete(id);
 
- render();
+  }else{
+
+    fav.add(id);
+
+  }
+
+
+  localStorage.setItem(
+
+    'ck_fav',
+
+    JSON.stringify(
+      [...fav]
+    )
+
+  );
+
+
+  render();
+
 }
 
-function setFilter(v,b){
 
- filter=v;
- onlyFav=false;
+/* ==========================================
+   FILTROS
+========================================== */
 
- sectionTitle.textContent=
- v==='Todos'
- ?(
-   navigation.length
-   ?navigation[navigation.length-1].name
-   :'Catálogo'
+function setFilter(
+
+  value,
+
+  button
+
+){
+
+  filter=
+  value;
+
+
+  onlyFav=
+  false;
+
+
+  if(
+    value==='Todos'
+  ){
+
+    sectionTitle.textContent=
+
+    navigation.length
+
+    ?navigation[
+      navigation.length-1
+    ].name
+
+    :'Catálogo';
+
+  }else{
+
+    sectionTitle.textContent=
+    value;
+
+  }
+
+
+  document
+
+  .querySelectorAll(
+    '.tabs button'
   )
- :v;
 
- document
- .querySelectorAll('.tabs button')
- .forEach(x=>
-  x.classList.remove('active')
- );
+  .forEach(
+    x=>
+    x.classList.remove(
+      'active'
+    )
+  );
 
- if(
-  b&&
-  b.closest?.('.tabs')
- )
- b.classList.add('active');
 
- render();
+  if(
+    button &&
+    button.closest?.('.tabs')
+  ){
+
+    button
+    .classList
+    .add('active');
+
+  }
+
+
+  render();
+
 }
+
 
 function showFavorites(){
 
- onlyFav=true;
- filter='Todos';
+  onlyFav=
+  true;
 
- sectionTitle.textContent=
- 'Favoritos';
 
- render();
+  filter=
+  'Todos';
+
+
+  sectionTitle
+  .textContent=
+  'Favoritos';
+
+
+  render();
+
 }
 
-/* ==============================
+
+/* ==========================================
    HOME
-================================ */
+========================================== */
 
 async function home(){
 
- filter='Todos';
- onlyFav=false;
+  filter=
+  'Todos';
 
- navigation=[];
- currentDrive=null;
- items=[];
- movies=[];
 
- breadcrumb.style.display='none';
+  onlyFav=
+  false;
 
- sectionTitle.textContent=
- 'Catálogo';
 
- render();
+  navigation=[];
 
- if(accessToken){
-  await loadSharedDrives();
- }
+  currentDrive=null;
 
- scrollTo({
-  top:0,
-  behavior:'smooth'
- });
+  items=[];
+
+  movies=[];
+
+
+  breadcrumb
+  .style
+  .display=
+  'none';
+
+
+  sectionTitle
+  .textContent=
+  'Catálogo';
+
+
+  render();
+
+
+  if(accessToken){
+
+    await loadSharedDrives();
+
+  }
+
+
+  scrollTo({
+
+    top:0,
+
+    behavior:'smooth'
+
+  });
+
 }
 
-/* ==============================
+
+/* ==========================================
    AJUSTES
-================================ */
+========================================== */
 
 function settings(){
 
- msg(
-  'Ajustes\nGoogle Client ID configurado: '+
-  (
-   window.CINEKIDS?.GOOGLE_CLIENT_ID&&
-   !window.CINEKIDS.GOOGLE_CLIENT_ID.includes(
-    'PON_AQUI'
-   )
-   ?'Sí'
-   :'No'
+  msg(
+
+    'Ajustes\n'+
+
+    'Google Client ID configurado: '+
+
+    (
+
+      window.CINEKIDS
+      ?.GOOGLE_CLIENT_ID
+
+      &&
+
+      !window.CINEKIDS
+      .GOOGLE_CLIENT_ID
+      .includes(
+        'PON_AQUI'
+      )
+
+      ?'Sí'
+
+      :'No'
+
+    )
+
+  );
+
+}
+
+
+/* ==========================================
+   REPRODUCCIÓN GOOGLE DRIVE
+========================================== */
+
+function openMovie(id){
+
+  const movie=
+
+  movies.find(
+    x=>x.id===id
+  );
+
+
+  if(!movie){
+
+    return;
+
+  }
+
+
+  const player=
+
+  document.getElementById(
+    'player'
+  );
+
+
+  const drivePlayer=
+
+  document.getElementById(
+    'drivePlayer'
+  );
+
+
+  const ptitle=
+
+  document.getElementById(
+    'ptitle'
+  );
+
+
+  const pmeta=
+
+  document.getElementById(
+    'pmeta'
+  );
+
+
+  ptitle.textContent=
+
+  cleanTitle(
+    movie.name
+  );
+
+
+  pmeta.textContent=
+
+  movie.mimeType||
+  'video';
+
+
+  /*
+    IMPORTANTE:
+    Ya no descargamos todo el archivo
+    mediante fetch + Blob.
+
+    Abrimos la vista previa oficial
+    de Google Drive.
+  */
+
+  drivePlayer.src=
+
+  'https://drive.google.com/file/d/'+
+
+  encodeURIComponent(
+    movie.id
   )
- );
-}
 
-/* ==============================
-   REPRODUCTOR
-================================ */
+  +'/preview';
 
-async function openMovie(id){
 
- const m=
- movies.find(x=>x.id===id);
+  player.showModal();
 
- if(!m)return;
-
- const player=
- document.getElementById('player');
-
- const video=
- document.getElementById('video');
-
- const ptitle=
- document.getElementById('ptitle');
-
- const pmeta=
- document.getElementById('pmeta');
-
- ptitle.textContent=
- cleanTitle(m.name);
-
- pmeta.textContent=
- m.mimeType||'video';
-
- player.showModal();
-
- video.removeAttribute('src');
-
- try{
-
-  msg('Preparando reproducción…');
-
-  const r=await fetch(
-   `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(m.id)}?alt=media&supportsAllDrives=true`,
-   {
-    headers:{
-     Authorization:
-     'Bearer '+accessToken
-    }
-   }
-  );
-
-  if(!r.ok)
-   throw new Error(
-    'HTTP '+r.status
-   );
-
-  const blob=
-  await r.blob();
-
-  if(currentObjectUrl)
-   URL.revokeObjectURL(
-    currentObjectUrl
-   );
-
-  currentObjectUrl=
-  URL.createObjectURL(blob);
-
-  video.src=currentObjectUrl;
 
   msg(
-   'Película lista para reproducir.'
+    'Abriendo película desde Google Drive…'
   );
 
- }catch(e){
-
-  msg(
-   'No se pudo reproducir: '+
-   e.message
-  );
- }
 }
+
+
+/* ==========================================
+   CERRAR PLAYER
+========================================== */
 
 function closePlayer(){
 
- const video=
- document.getElementById('video');
+  const player=
 
- const player=
- document.getElementById('player');
-
- video.pause();
-
- video.removeAttribute('src');
-
- if(currentObjectUrl){
-
-  URL.revokeObjectURL(
-   currentObjectUrl
+  document.getElementById(
+    'player'
   );
 
-  currentObjectUrl=null;
- }
 
- player.close();
+  const drivePlayer=
+
+  document.getElementById(
+    'drivePlayer'
+  );
+
+
+  /*
+    Vaciar src detiene inmediatamente
+    la reproducción.
+  */
+
+  drivePlayer.src=
+  'about:blank';
+
+
+  player.close();
+
 }
 
-/* ==============================
+
+/* ==========================================
    LOGOUT
-================================ */
+========================================== */
 
 function logout(){
 
- accessToken=null;
+  accessToken=
+  null;
 
- items=[];
- movies=[];
- navigation=[];
- currentDrive=null;
 
- document.getElementById(
-  'driveChooser'
- ).innerHTML='';
+  items=[];
 
- document.getElementById(
-  'loginBtn'
- ).textContent=
- 'Continuar con Google';
+  movies=[];
 
- breadcrumb.style.display='none';
+  navigation=[];
 
- sectionTitle.textContent=
- 'Catálogo';
+  currentDrive=null;
 
- render();
 
- msg('Sesión cerrada.');
+  document
+
+  .getElementById(
+    'driveChooser'
+  )
+
+  .innerHTML='';
+
+
+  document
+
+  .getElementById(
+    'loginBtn'
+  )
+
+  .textContent=
+  'Continuar con Google';
+
+
+  breadcrumb
+  .style
+  .display=
+  'none';
+
+
+  sectionTitle
+  .textContent=
+  'Catálogo';
+
+
+  render();
+
+
+  msg(
+    'Sesión cerrada.'
+  );
+
 }
 
-/* ==============================
-   PWA
-================================ */
+
+/* ==========================================
+   INSTALAR COMO PWA
+========================================== */
 
 addEventListener(
- 'beforeinstallprompt',
- e=>{
 
-  e.preventDefault();
+  'beforeinstallprompt',
 
-  deferredPrompt=e;
- }
+  event=>{
+
+    event.preventDefault();
+
+    deferredPrompt=
+    event;
+
+  }
+
 );
+
 
 async function installApp(){
 
- if(deferredPrompt){
+  if(
+    deferredPrompt
+  ){
 
-  deferredPrompt.prompt();
+    deferredPrompt.prompt();
 
-  await deferredPrompt.userChoice;
 
-  deferredPrompt=null;
+    await deferredPrompt
+    .userChoice;
 
- }else{
 
-  msg(
-   'En Chrome abre el menú ⋮ y elige “Instalar aplicación” o “Añadir a pantalla de inicio”.'
+    deferredPrompt=
+    null;
+
+
+  }else{
+
+    msg(
+
+      'En Chrome abre el menú ⋮ y elige “Instalar aplicación” o “Añadir a pantalla de inicio”.'
+
+    );
+
+  }
+
+}
+
+
+/* ==========================================
+   SERVICE WORKER
+========================================== */
+
+if(
+  'serviceWorker'
+  in navigator
+){
+
+  navigator
+  .serviceWorker
+  .register(
+    'sw.js'
   );
- }
+
 }
 
-if('serviceWorker' in navigator){
 
- navigator.serviceWorker.register(
-  'sw.js'
- );
-}
+/* INICIAL */
 
 render();
 
