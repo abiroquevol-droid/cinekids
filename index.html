@@ -1,2248 +1,1143 @@
-<!doctype html>
-<html lang="es">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#07111f">
-<link rel="manifest" href="manifest.json">
-<title>CineKids</title>
-<style>
-:root{--bg:#07111f;--panel:#0c182a;--card:#101e33;--line:#20314b;--text:#fff;--muted:#9db0c9;--accent:#a78bfa}
-*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07111f,#091524);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
-button,input{font:inherit}.app{max-width:1180px;margin:auto;padding:18px 18px 110px}
-header{display:flex;justify-content:space-between;align-items:center}.brand{font-size:29px;font-weight:900}.brand span{color:var(--accent)}
-.profile{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#7c3aed,#0ea5e9);font-weight:900}
-.hero{margin:20px 0 18px;padding:26px;border-radius:26px;background:radial-gradient(circle at 80% 15%,rgba(167,139,250,.30),transparent 28%),linear-gradient(135deg,#10213a,#231442);border:1px solid rgba(255,255,255,.07)}
-.hero h1{font-size:clamp(2rem,7vw,4rem);line-height:1;margin:8px 0 12px}.muted{color:var(--muted);line-height:1.5}
-.actions,.driveChooser{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer}.primary{background:#fff;color:#111827}.secondary{background:#17263d;color:#fff;border:1px solid var(--line)}
-.notice{display:none;margin-top:14px;padding:13px 14px;border-radius:14px;background:#0c2139;color:#cbe9ff;white-space:pre-line}
-.breadcrumb{display:none;align-items:center;gap:10px;margin:16px 0;padding:12px;border-radius:14px;background:#0c182a;border:1px solid var(--line)}
-.breadcrumb button{border:0;background:#17263d;color:white;border-radius:10px;padding:9px 13px;font-weight:800}.breadcrumb span{color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.search{width:100%;padding:14px 16px;background:#091426;color:#fff;border:1px solid var(--line);border-radius:14px;font-size:16px}
-.tabs{display:flex;gap:8px;overflow:auto;margin:16px 0}.tabs button{white-space:nowrap;background:#122038;color:#b9c8da;border:1px solid var(--line);padding:10px 13px;border-radius:999px}.tabs button.active{background:#fff;color:#111827}
-.section-head{display:flex;justify-content:space-between;align-items:center;margin:22px 0 12px}.section-head h2{margin:0;font-size:20px}.section-head span{color:var(--muted);font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-@media(min-width:700px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media(min-width:1050px){.grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;position:relative}
-.poster{aspect-ratio:2/3;display:grid;place-items:center;padding:12px;text-align:center;font-weight:850;background:linear-gradient(145deg,#273c55,#121c2d);overflow:hidden;position:relative}
-.poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.posterShade{position:absolute;inset:auto 0 0 0;padding:28px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.82));z-index:1;text-align:left}
-.folderPoster{background:linear-gradient(145deg,#243a5e,#151f35)}
-.folderIcon,.movieIcon{display:block;font-size:52px;margin-bottom:10px}
-.meta{padding:11px}
-.title{font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.small{font-size:12px;color:var(--muted);margin-top:4px}
-.heart{position:absolute;right:8px;top:8px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:white;font-size:18px;z-index:3}
-.loadMore{grid-column:1/-1;display:flex;justify-content:center;padding:14px}
-.enrichStatus{grid-column:1/-1;padding:8px 12px;border-radius:12px;background:#0c2139;color:#cbe9ff;font-size:13px}
-nav{position:fixed;left:12px;right:12px;bottom:10px;max-width:760px;margin:auto;background:rgba(8,18,32,.94);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);z-index:50}
-nav button{background:none;border:0;color:#aab7c9;padding:8px 2px;font-size:12px}
-nav button.active{color:white}
-dialog{width:min(95vw,960px);border:0;border-radius:22px;padding:0;background:#07111f;color:white;overflow:hidden}
-dialog::backdrop{background:rgba(0,0,0,.82)}
-#drivePlayer{width:100%;height:min(66vh,600px);border:0;background:#000;display:block}
-.dlg{padding:16px}
-.empty{padding:30px;text-align:center;color:var(--muted);grid-column:1/-1}
-.detailHero{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:start}
-.detailPoster{width:110px;aspect-ratio:2/3;border-radius:12px;object-fit:cover;background:#17263d}
-.detailTitle{margin:0 0 6px;font-size:22px}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
-.chip{font-size:12px;background:#17263d;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:#d8e3f3}
-.overview{margin-top:12px;color:#d6e1ef;line-height:1.5}
 
-/* ===== CINEKIDS CINEMA UI ===== */
-
-html{background:#02060c}
-
-body{
-position:relative;
-overflow-x:hidden;
-background:
-radial-gradient(circle at 18% 10%,rgba(124,58,237,.20),transparent 28%),
-radial-gradient(circle at 82% 16%,rgba(14,165,233,.16),transparent 24%),
-radial-gradient(circle at 50% 95%,rgba(249,115,22,.08),transparent 34%),
-linear-gradient(180deg,#040914 0%,#07111f 40%,#030812 100%);
-background-attachment:fixed
-}
-
-body::before{
-content:"";
-position:fixed;
-inset:0;
-pointer-events:none;
-z-index:-2;
-opacity:.22;
-background:repeating-linear-gradient(90deg,transparent 0 44px,rgba(255,255,255,.025) 45px,transparent 46px 90px)
-}
-
-body::after{
-content:"";
-position:fixed;
-inset:0;
-pointer-events:none;
-z-index:-1;
-background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.50) 100%)
-}
-
-.app{max-width:1280px;padding:18px 18px 110px}
-
-header{
-position:sticky;
-top:0;
-z-index:40;
-margin:-18px -18px 0;
-padding:18px;
-background:linear-gradient(180deg,rgba(3,8,18,.92),rgba(3,8,18,.55),transparent);
-backdrop-filter:blur(12px)
-}
-
-.brand{
-letter-spacing:-1.2px;
-text-shadow:0 8px 30px rgba(167,139,250,.18)
-}
-
-.hero{
-position:relative;
-overflow:hidden;
-min-height:270px;
-display:flex;
-flex-direction:column;
-justify-content:flex-end;
-padding:30px;
-border-radius:30px;
-background:
-linear-gradient(90deg,rgba(5,9,18,.92),rgba(12,18,35,.70) 52%,rgba(29,15,55,.64)),
-radial-gradient(circle at 78% 26%,rgba(124,58,237,.52),transparent 28%),
-radial-gradient(circle at 92% 72%,rgba(14,165,233,.34),transparent 28%);
-border:1px solid rgba(255,255,255,.09);
-box-shadow:0 30px 80px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.07)
-}
-
-.hero::before{
-content:"";
-position:absolute;
-width:250px;
-height:250px;
-right:-55px;
-top:-80px;
-border-radius:50%;
-border:22px solid rgba(255,255,255,.035);
-box-shadow:0 0 0 26px rgba(255,255,255,.018),0 0 0 52px rgba(255,255,255,.010)
-}
-
-.hero::after{
-content:"▶";
-position:absolute;
-right:42px;
-bottom:28px;
-font-size:88px;
-line-height:1;
-color:rgba(255,255,255,.055);
-transform:rotate(-4deg)
-}
-
-.hero>*{position:relative;z-index:2}
-
-.hero h1{
-max-width:760px;
-letter-spacing:-2px;
-text-shadow:0 6px 28px rgba(0,0,0,.45)
-}
-
-.actions{margin-top:20px}
-
-.btn{
-min-height:48px;
-transition:transform .18s ease,box-shadow .18s ease,background .18s ease
-}
-
-.btn:active{transform:scale(.97)}
-.primary{box-shadow:0 10px 32px rgba(255,255,255,.10)}
-
-.notice{
-border:1px solid rgba(56,189,248,.16);
-background:rgba(7,30,53,.72);
-backdrop-filter:blur(12px)
-}
-
-.breadcrumb{
-position:sticky;
-top:76px;
-z-index:30;
-background:rgba(8,18,32,.86);
-backdrop-filter:blur(16px);
-box-shadow:0 16px 38px rgba(0,0,0,.20)
-}
-
-.search{
-position:sticky;
-top:144px;
-z-index:29;
-height:54px;
-background:rgba(7,17,31,.84);
-backdrop-filter:blur(14px);
-box-shadow:0 14px 34px rgba(0,0,0,.16)
-}
-
-.search:focus{
-outline:none;
-border-color:rgba(167,139,250,.72);
-box-shadow:0 0 0 3px rgba(167,139,250,.10),0 14px 34px rgba(0,0,0,.18)
-}
-
-.section-head{margin-top:28px}
-.section-head h2{font-size:24px;letter-spacing:-.5px}
-.grid{gap:16px}
-
-.card{
-background:linear-gradient(180deg,rgba(16,30,51,.96),rgba(7,17,31,.98));
-border-color:rgba(255,255,255,.075);
-box-shadow:0 12px 34px rgba(0,0,0,.20);
-transform:translateZ(0);
-transition:transform .20s ease,border-color .20s ease,box-shadow .20s ease
-}
-
-.card:active{transform:scale(.985)}
-
-.poster{
-background:radial-gradient(circle at 50% 12%,rgba(75,105,150,.25),transparent 35%),linear-gradient(145deg,#182840,#09121f)
-}
-
-.poster::after{
-content:"";
-position:absolute;
-inset:0;
-pointer-events:none;
-box-shadow:inset 0 -60px 60px rgba(0,0,0,.10)
-}
-
-.meta{background:linear-gradient(180deg,rgba(14,28,48,.92),rgba(9,20,35,.96))}
-.title{font-size:15px;line-height:1.25}
-.heart{backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08)}
-
-nav{
-max-width:720px;
-left:14px;
-right:14px;
-bottom:12px;
-background:rgba(5,12,23,.90);
-border-color:rgba(255,255,255,.10);
-box-shadow:0 18px 48px rgba(0,0,0,.48)
-}
-
-nav button{min-height:52px;border-radius:12px}
-nav button:active{background:rgba(255,255,255,.05)}
-dialog{box-shadow:0 40px 120px rgba(0,0,0,.65)}
-#drivePlayer{background:#000}
-
-@media(max-width:699px){
-.app{padding-left:14px;padding-right:14px;padding-bottom:105px}
-header{margin-left:-14px;margin-right:-14px;padding-left:14px;padding-right:14px}
-.hero{min-height:250px;padding:24px 22px;border-radius:26px}
-.hero h1{font-size:clamp(2rem,11vw,3.1rem)}
-.hero::after{font-size:64px;right:22px}
-.actions{display:grid;grid-template-columns:1fr}
-.actions .btn{width:100%}
-.search{top:72px}
-.breadcrumb{top:72px}
-.breadcrumb + .search{top:137px}
-.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{border-radius:20px}
-.poster{aspect-ratio:2/3}
-nav{grid-template-columns:repeat(4,1fr);border-radius:22px;padding:6px}
-}
-
-@media(min-width:900px){
-.app{padding:24px 28px 90px}
-header{margin:-24px -28px 0;padding:20px 28px}
-.hero{min-height:340px;padding:42px}
-.hero .muted{max-width:640px;font-size:18px}
-.hero h1{font-size:64px;max-width:820px}
-.actions{max-width:520px}
-.search{position:relative;top:auto;max-width:620px;margin:24px 0 10px}
-.breadcrumb{position:relative;top:auto}
-.section-head{margin-top:34px}
-.grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}
-.card:hover{
-transform:translateY(-5px) scale(1.015);
-border-color:rgba(167,139,250,.32);
-box-shadow:0 24px 55px rgba(0,0,0,.38)
-}
-.poster{aspect-ratio:2/3}
-nav{
-position:sticky;
-top:10px;
-bottom:auto;
-left:auto;
-right:auto;
-margin:10px 0 20px auto;
-max-width:430px
-}
-}
-
-@media(min-width:1180px){
-.grid{grid-template-columns:repeat(6,minmax(0,1fr))}
-}
-</style>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="config.js?v=20260825-0258"></script>
-</head>
-<body>
-<div class="app">
-<header>
-<div class="brand">Cine<span>Kids</span></div>
-<div class="profile">CK</div>
-</header>
-
-<section class="hero">
-<div class="muted">Tu cine familiar</div>
-<h1>Películas desde tu Google Drive</h1>
-<div class="muted">Tu biblioteca de cine, organizada desde Google Drive.</div>
-
-<div class="actions">
-<button class="btn primary" id="loginBtn" onclick="googleLogin()">Continuar con Google</button>
-<button class="btn secondary" onclick="logout()">Cerrar sesión</button>
-<button class="btn secondary" id="audioPrefBtn" onclick="toggleAudioPreference()">🎧 Preferir Latino: ON</button>
-</div>
-
-<div id="notice" class="notice"></div>
-<div id="driveChooser" class="driveChooser"></div>
-</section>
-
-<div id="breadcrumb" class="breadcrumb">
-<button onclick="goBack()">← Atrás</button>
-<span id="pathName"></span>
-</div>
-
-<input id="search" class="search" placeholder="Buscar carpeta o película…" oninput="resetRender()">
-
-<div class="section-head">
-<h2 id="sectionTitle">Tu biblioteca</h2>
-<span id="count"></span>
-</div>
-
-<div id="grid" class="grid"></div>
-</div>
-
-<nav>
-<button class="active" onclick="home()">⌂<br>Inicio</button>
-<button onclick="focusSearch()">⌕<br>Buscar</button>
-<button onclick="showFavorites(this)">♡<br>Favoritos</button>
-<button onclick="settings()">⚙<br>Ajustes</button>
-</nav>
-
-<dialog id="player">
-<iframe id="drivePlayer" allow="autoplay; fullscreen" allowfullscreen></iframe>
-<video id="nativePlayer" controls playsinline style="display:none;width:100%;background:#000;max-height:66vh"></video>
-
-<div class="dlg">
-<div class="detailHero">
-<img id="detailPoster" class="detailPoster" alt="">
-<div>
-<h2 id="ptitle" class="detailTitle"></h2>
-<div id="pmeta" class="muted"></div>
-<div id="detailChips" class="chips"></div>
-</div>
-</div>
-
-<div id="overview" class="overview"></div>
-
-<div class="actions">
-<button class="btn primary" id="nativeAudioBtn" onclick="tryNativeLatino()">🎧 Intentar Español Latino</button>
-<button class="btn secondary" id="fullPlayerBtn" onclick="openFullPlayer()">Abrir reproductor Drive</button>
-<button class="btn secondary" onclick="closePlayer()">Cerrar</button>
-</div>
-</div>
-</dialog>
-
-<script>
-let currentMovieId=null;
-let currentMovie=null;
-let nativeObjectUrl=null;
-
-const AUDIO_PREF_KEY='ck_prefer_latino';
-let preferLatino=localStorage.getItem(AUDIO_PREF_KEY)!=='0';
-
-let tokenClient;
-let accessToken=null;
-let items=[];
-let movies=[];
-let filter='Todos';
-let onlyFav=false;
-let deferredPrompt=null;
-let currentDrive=null;
-let navigation=[];
-let renderLimit=60;
-
-let enrichRunning=false;
-let enrichGeneration=0;
-let authBusy=false;
-
-const fav=new Set(JSON.parse(localStorage.getItem('ck_fav')||'[]'));
-const metaCache=new Map(JSON.parse(localStorage.getItem('ck_meta_cache')||'[]'));
-
-const notice=document.getElementById('notice');
-const grid=document.getElementById('grid');
-const count=document.getElementById('count');
-const search=document.getElementById('search');
-const sectionTitle=document.getElementById('sectionTitle');
-const breadcrumb=document.getElementById('breadcrumb');
-const pathName=document.getElementById('pathName');
-
-function msg(t){
-notice.style.display='block';
-notice.textContent=t;
-}
-
-function saveMetaCache(){
-try{
-localStorage.setItem(
-'ck_meta_cache',
-JSON.stringify([...metaCache.entries()].slice(-500))
-);
-}catch{}
-}
-
-function initGoogle(){
-
-if(!window.google?.accounts?.oauth2){
-setTimeout(initGoogle,400);
-return;
-}
-
-const id=window.CINEKIDS?.GOOGLE_CLIENT_ID||'';
-
-if(!id||id.includes('PON_AQUI')){
-return;
-}
-
-tokenClient=google.accounts.oauth2.initTokenClient({
-client_id:id,
-scope:'https://www.googleapis.com/auth/drive.readonly',
-
-callback:async r=>{
-
-if(r.error){
-msg('Error de autenticación: '+r.error);
-return;
-}
-
-accessToken=r.access_token;
-
-document.getElementById('loginBtn').textContent='Google conectado';
-
-msg('Cuenta conectada. Buscando unidades compartidas…');
-
-await loadSharedDrives();
-
-}
-});
-
-}
-
-addEventListener('load',()=>{
-updateAudioPrefButton();
-setTimeout(initGoogle,600);
-});
-
-function googleLogin(){
-
-const id=window.CINEKIDS?.GOOGLE_CLIENT_ID||'';
-
-if(!id||id.includes('PON_AQUI')){
-msg('Falta conectar Google OAuth. Revisa config.js.');
-return;
-}
-
-if(!tokenClient){
-initGoogle();
-}
-
-if(tokenClient){
-tokenClient.requestAccessToken({
-prompt:'consent'
-});
-}else{
-msg('Google todavía está cargando. Intenta nuevamente en unos segundos.');
-}
-
-}
-async function api(path){
- const r=await fetch(
-   'https://www.googleapis.com/drive/v3/'+path,
-   {headers:{Authorization:'Bearer '+accessToken}}
- );
-
- if(r.status===401){
-   accessToken=null;
-   document.getElementById('loginBtn').textContent='Continuar con Google';
-   throw new Error('La sesión de Google expiró. Pulsa Continuar con Google.');
- }
-
- if(!r.ok){
-   throw new Error(await r.text());
- }
-
- return r.json();
-}
-
-/* =========================================================
-   UNIDADES COMPARTIDAS
-========================================================= */
-
-async function loadSharedDrives(){
-
- if(!accessToken)return;
-
- try{
-
-   const data=await api('drives?pageSize=100');
-
-   const chooser=document.getElementById('driveChooser');
-
-   chooser.innerHTML='';
-
-   const drives=data.drives||[];
-
-   drives.forEach(d=>{
-
-     const b=document.createElement('button');
-
-     b.className='btn secondary';
-
-     b.textContent=d.name;
-
-     b.onclick=()=>openDrive(d);
-
-     chooser.appendChild(b);
-
-   });
-
-   msg(
-     `Encontradas ${drives.length} unidades compartidas. `+
-     `Elige una para explorar sus carpetas y películas.`
-   );
-
- }catch(e){
-
-   msg('No se pudieron leer las unidades compartidas: '+e.message);
-
- }
-
-}
-
-
-/* =========================================================
-   ABRIR UNIDAD
-========================================================= */
-
-async function openDrive(drive){
-
- currentDrive=drive;
-
- navigation=[];
-
- navigation.push({
-   id:drive.id,
-   name:drive.name,
-   root:true
- });
-
- pathName.textContent=drive.name;
-
- breadcrumb.style.display='flex';
-
- sectionTitle.textContent=drive.name;
-
- search.value='';
-
- onlyFav=false;
-
- await loadFolder(drive.id,drive.name,true);
-
-}
-
-
-/* =========================================================
-   LEER CONTENIDO DE CARPETA
-========================================================= */
-
-async function loadFolder(folderId,folderName,isDriveRoot=false){
-
- if(!accessToken||!currentDrive)return;
-
- const generation=++enrichGeneration;
-
- renderLimit=60;
-
- items=[];
-
- movies=[];
-
- sectionTitle.textContent=folderName;
-
- pathName.textContent=navigation.map(x=>x.name).join('  ›  ');
-
- grid.innerHTML=
-   '<div class="empty">Cargando carpeta…</div>';
-
- count.textContent='';
-
- msg('Leyendo '+folderName+'…');
-
- try{
-
-   let pageToken='';
-
-   do{
-
-     let q;
-
-     if(isDriveRoot){
-       q="'"+currentDrive.id+"' in parents and trashed = false";
-     }else{
-       q="'"+folderId+"' in parents and trashed = false";
-     }
-
-     const fields=
-       'nextPageToken,files('+
-       'id,'+
-       'name,'+
-       'mimeType,'+
-       'size,'+
-       'modifiedTime,'+
-       'parents,'+
-       'shortcutDetails(targetId,targetMimeType)'+
-       ')';
-
-     let path=
-       'files?'+
-       'corpora=drive'+
-       '&driveId='+encodeURIComponent(currentDrive.id)+
-       '&includeItemsFromAllDrives=true'+
-       '&supportsAllDrives=true'+
-       '&pageSize=1000'+
-       '&q='+encodeURIComponent(q)+
-       '&fields='+encodeURIComponent(fields);
-
-     if(pageToken){
-       path+='&pageToken='+encodeURIComponent(pageToken);
-     }
-
-     const data=await api(path);
-
-     for(const f of(data.files||[])){
-
-       const resolved=resolveDriveItem(f);
-
-       if(resolved){
-         items.push(resolved);
-       }
-
-     }
-
-     pageToken=data.nextPageToken||'';
-
-   }while(pageToken);
-
-   sortItems();
-
-   movies=items.filter(x=>x.kind==='movie');
-
-   resetRender();
-
-   const folders=items.filter(x=>x.kind==='folder').length;
-
-   msg(
-     `${folderName}: ${folders} carpetas · `+
-     `${movies.length} películas`
-   );
-
-   if(generation===enrichGeneration){
-     startMetadataEnrichment(generation);
-   }
-
- }catch(e){
-
-   grid.innerHTML=
-     '<div class="empty">No se pudo abrir esta carpeta.</div>';
-
-   msg('Error al leer la carpeta: '+e.message);
-
- }
-
-}
-
-
-/* =========================================================
-   RESOLVER CARPETAS, VIDEOS Y ACCESOS DIRECTOS
-========================================================= */
-
-function resolveDriveItem(f){
-
- const folderMime='application/vnd.google-apps.folder';
-
- const shortcutMime='application/vnd.google-apps.shortcut';
-
- /*
-   CARPETA NORMAL
- */
-
- if(f.mimeType===folderMime){
-
-   return{
-     ...f,
-     realId:f.id,
-     realMime:f.mimeType,
-     kind:'folder',
-     isShortcut:false
-   };
-
- }
-
- /*
-   ACCESO DIRECTO
- */
-
- if(f.mimeType===shortcutMime){
-
-   const targetId=f.shortcutDetails?.targetId;
-
-   const targetMime=f.shortcutDetails?.targetMimeType;
-
-   if(!targetId)return null;
-
-   /*
-     ACCESO DIRECTO A CARPETA
-   */
-
-   if(targetMime===folderMime){
-
-     return{
-       ...f,
-       realId:targetId,
-       realMime:targetMime,
-       kind:'folder',
-       isShortcut:true
-     };
-
-   }
-
-   /*
-     ACCESO DIRECTO A VIDEO
-   */
-
-   if(
-     (targetMime||'').startsWith('video/') ||
-     looksLikeMovie(f.name,targetMime)
-   ){
-
-     return{
-       ...f,
-       realId:targetId,
-       realMime:targetMime,
-       mimeType:targetMime,
-       kind:'movie',
-       isShortcut:true
-     };
-
-   }
-
-   return null;
-
- }
-
- /*
-   VIDEO NORMAL
- */
-
- if(looksLikeMovie(f.name,f.mimeType)){
-
-   return{
-     ...f,
-     realId:f.id,
-     realMime:f.mimeType,
-     kind:'movie',
-     isShortcut:false
-   };
-
- }
-
- return null;
-
-}
-
-
-/* =========================================================
-   DETECTAR PELÍCULAS
-========================================================= */
-
-function looksLikeMovie(name,mime){
-
- if(mime==='application/vnd.google-apps.folder'){
-   return false;
- }
-
- const videoMime=(mime||'').startsWith('video/');
-
- const videoExtension=
-   /\.(mp4|mkv|avi|mov|m4v|webm|mpeg|mpg|ts|m2ts)$/i.test(name||'');
-
- return videoMime||videoExtension;
-
-}
-
-
-/* =========================================================
-   ORDENAR
-========================================================= */
-
-function sortItems(){
-
- items.sort((a,b)=>{
-
-   if(a.kind!==b.kind){
-     return a.kind==='folder'?-1:1;
-   }
-
-   return cleanTitle(a.name)
-     .localeCompare(
-       cleanTitle(b.name),
-       'es',
-       {numeric:true,sensitivity:'base'}
-     );
-
- });
-
-}
-
-
-/* =========================================================
-   LIMPIAR TÍTULO
-========================================================= */
-
-function cleanTitle(n){
-
- return String(n||'')
-   .replace(/\.(mp4|mkv|avi|mov|m4v|webm|mpeg|mpg|ts|m2ts)$/i,'')
-   .replace(/[._]/g,' ')
-   .replace(/\s+/g,' ')
-   .trim();
-
-}
-
-
-/* =========================================================
-   EXTRAER AÑO
-========================================================= */
-
-function extractYear(title){
-
- const m=String(title||'').match(
-   /\b(19\d{2}|20\d{2})\b/
- );
-
- return m?Number(m[1]):null;
-
-}
-
-
-/* =========================================================
-   NORMALIZAR TÍTULO PARA TMDB
-========================================================= */
-
-function normalizeMovieTitle(name){
-
- let t=cleanTitle(name);
-
- t=t
-   .replace(/\b(2160p|1080p|720p|480p|4k|uhd|hdr|hdr10|bluray|blu-ray|brrip|webrip|web-dl|webdl|dvdrip|x264|x265|h264|h265|hevc|aac|ac3|dts|latino|castellano|español|spanish|english|dual|multi|subs?|subtitulado)\b/gi,' ')
-   .replace(/\[[^\]]*]/g,' ')
-   .replace(/\{[^}]*}/g,' ')
-   .replace(/\s+/g,' ')
-   .trim();
-
- return t;
-
-}
-
-
-/* =========================================================
-   ESCAPAR HTML
-========================================================= */
-
-function escapeHtml(s){
-
- return String(s).replace(
-   /[&<>"']/g,
-   c=>({
-     '&':'&amp;',
-     '<':'&lt;',
-     '>':'&gt;',
-     '"':'&quot;',
-     "'":'&#39;'
-   }[c])
- );
-
-}
-
-
-/* =========================================================
-   RENDER PRINCIPAL
-========================================================= */
-
-function resetRender(){
-
- renderLimit=60;
-
- render();
-
-}
-
-
-function render(){
-
- const q=search.value
-   .toLowerCase()
-   .trim();
-
- let list=items.filter(item=>{
-
-   const title=cleanTitle(item.name).toLowerCase();
-
-   if(q&&!title.includes(q)){
-     return false;
-   }
-
-   if(onlyFav){
-     return item.kind==='movie'&&fav.has(item.realId);
-   }
-
-   return true;
-
- });
-
- const folders=list.filter(x=>x.kind==='folder').length;
-
- const films=list.filter(x=>x.kind==='movie').length;
-
- count.textContent=
-   `${folders} carpetas · ${films} películas`;
-
- const visible=list.slice(0,renderLimit);
-
- if(!visible.length){
-
-   grid.innerHTML=
-     '<div class="empty">'+
-     (
-       accessToken
-       ?'Esta carpeta está vacía o no contiene videos compatibles.'
-       :'Conecta Google para cargar tu catálogo.'
-     )+
-     '</div>';
-
-   return;
-
- }
-
- grid.innerHTML=visible.map(renderCard).join('');
-
- if(list.length>renderLimit){
-
-   grid.insertAdjacentHTML(
-     'beforeend',
-     `<div class="loadMore">
-       <button class="btn secondary"
-       onclick="loadMoreItems()">
-       Mostrar más
-       </button>
-     </div>`
-   );
-
- }
-
-}
-
-
-/* =========================================================
-   TARJETAS
-========================================================= */
-
-function renderCard(item){
-
- const title=cleanTitle(item.name);
-
- /*
-   CARPETA
- */
-
- if(item.kind==='folder'){
-
-   return`
-   <article
-     class="card"
-     onclick="openFolderItem('${item.realId}',${JSON.stringify(title)})">
-
-     <div class="poster folderPoster">
-
-       <div>
-         <span class="folderIcon">
-         ${item.isShortcut?'🔗📁':'📁'}
-         </span>
-
-         ${escapeHtml(title)}
-       </div>
-
-     </div>
-
-     <div class="meta">
-
-       <div class="title">
-       ${escapeHtml(title)}
-       </div>
-
-       <div class="small">
-       ${item.isShortcut?'Acceso directo a carpeta':'Carpeta'}
-       </div>
-
-     </div>
-
-   </article>
-   `;
-
- }
-
- /*
-   PELÍCULA
- */
-
- const meta=metaCache.get(item.realId)||{};
-
- const poster=meta.poster||'';
-
- const displayTitle=
-   meta.titleEs||
-   meta.title||
-   title;
-
- const posterHtml=poster
-   ?`<img
-       src="${escapeHtml(poster)}"
-       loading="lazy"
-       alt="${escapeHtml(displayTitle)}"
-       onerror="this.remove()">`
-   :'';
-
- return`
- <article
-   class="card"
-   onclick="openMovie('${item.realId}')">
-
-   <button
-     class="heart"
-     onclick="event.stopPropagation();toggleFav('${item.realId}')">
-     ${fav.has(item.realId)?'♥':'♡'}
-   </button>
-
-   <div class="poster">
-
-     ${posterHtml}
-
-     ${poster
-       ?''
-       :`<div>
-          <span class="movieIcon">🎬</span>
-          ${escapeHtml(displayTitle)}
-        </div>`
-     }
-
-     ${poster
-       ?`<div class="posterShade">
-          ${escapeHtml(displayTitle)}
-        </div>`
-       :''
-     }
-
-   </div>
-
-   <div class="meta">
-
-     <div class="title">
-       ${escapeHtml(displayTitle)}
-     </div>
-
-     <div class="small">
-       ${escapeHtml(item.realMime||item.mimeType||'video')}
-       ${item.isShortcut?' · acceso directo':''}
-     </div>
-
-   </div>
-
- </article>
- `;
-
-}
-
-
-/* =========================================================
-   MOSTRAR MÁS
-========================================================= */
-
-function loadMoreItems(){
-
- renderLimit+=60;
-
- render();
-
-}
-
-
-/* =========================================================
-   ABRIR CARPETA
-========================================================= */
-
-async function openFolderItem(id,name){
-
- navigation.push({
-   id,
-   name,
-   root:false
- });
-
- search.value='';
-
- onlyFav=false;
-
- await loadFolder(id,name,false);
-
- window.scrollTo({
-   top:0,
-   behavior:'smooth'
- });
-
-}
-
-
-/* =========================================================
-   ATRÁS
-========================================================= */
-
-async function goBack(){
-
- if(navigation.length<=1){
-
-   home();
-
-   return;
-
- }
-
- navigation.pop();
-
- const previous=navigation[navigation.length-1];
-
- search.value='';
-
- await loadFolder(
-   previous.id,
-   previous.name,
-   previous.root===true
- );
-
-}
-
-
-/* =========================================================
-   FAVORITOS
-========================================================= */
-
-function toggleFav(id){
-
- if(fav.has(id)){
-   fav.delete(id);
- }else{
-   fav.add(id);
- }
-
- localStorage.setItem(
-   'ck_fav',
-   JSON.stringify([...fav])
- );
-
- render();
-
-}
-
-
-function showFavorites(){
-
- onlyFav=true;
-
- sectionTitle.textContent='Favoritos';
-
- render();
-
-}
-
-
-/* =========================================================
-   BUSCADOR
-========================================================= */
-
-function focusSearch(){
-
- search.focus();
-
- search.scrollIntoView({
-   behavior:'smooth',
-   block:'center'
- });
-
-}
-
-
-/* =========================================================
-   HOME
-========================================================= */
-
-function home(){
-
- onlyFav=false;
-
- search.value='';
-
- if(currentDrive){
-
-   navigation=[{
-     id:currentDrive.id,
-     name:currentDrive.name,
-     root:true
-   }];
-
-   loadFolder(
-     currentDrive.id,
-     currentDrive.name,
-     true
-   );
-
- }else{
-
-   sectionTitle.textContent='Tu biblioteca';
-
-   items=[];
-
-   movies=[];
-
-   render();
-
- }
-
- window.scrollTo({
-   top:0,
-   behavior:'smooth'
- });
-
-}
-
-
-/* =========================================================
-   TMDB
-========================================================= */
-
-function getTmdbKey(){
-
- return(
-   window.CINEKIDS?.TMDB_API_KEY||
-   window.CINEKIDS?.TMDB_KEY||
-   ''
- );
-
-}
-
-
-async function tmdbFetch(path){
-
- const key=getTmdbKey();
-
- if(!key){
-   throw new Error('TMDB API Key no configurada');
- }
-
- const separator=path.includes('?')?'&':'?';
-
- const url=
-   'https://api.themoviedb.org/3/'+
-   path+
-   separator+
-   'api_key='+encodeURIComponent(key)+
-   '&language=es-MX';
-
- const r=await fetch(url);
-
- if(!r.ok){
-   throw new Error('TMDB HTTP '+r.status);
- }
-
- return r.json();
-
-}
-
-
-/* =========================================================
-   BUSCAR METADATOS
-========================================================= */
-
-async function fetchMovieMetadata(movie){
-
- const original=cleanTitle(movie.name);
-
- const normalized=normalizeMovieTitle(movie.name);
-
- const year=extractYear(original);
-
- let query=normalized
-   .replace(/\b(19\d{2}|20\d{2})\b/g,' ')
-   .replace(/\s+/g,' ')
-   .trim();
-
- if(!query){
-   query=original;
- }
-
- let path=
-   'search/movie?query='+
-   encodeURIComponent(query)+
-   '&include_adult=false';
-
- if(year){
-   path+='&year='+year;
- }
-
- let data=await tmdbFetch(path);
-
- let results=data.results||[];
-
- /*
-   Si no encuentra usando el año,
-   vuelve a intentar sin él.
- */
-
- if(!results.length&&year){
-
-   data=await tmdbFetch(
-     'search/movie?query='+
-     encodeURIComponent(query)+
-     '&include_adult=false'
-   );
-
-   results=data.results||[];
-
- }
-
- if(!results.length){
-   return null;
- }
-
- const best=chooseBestMovieMatch(
-   query,
-   year,
-   results
- );
-
- if(!best){
-   return null;
- }
-
- return{
-   tmdbId:best.id,
-   title:best.title||best.original_title||original,
-   titleEs:best.title||best.original_title||original,
-   originalTitle:best.original_title||'',
-   overview:best.overview||'',
-   releaseDate:best.release_date||'',
-   year:best.release_date
-     ?best.release_date.slice(0,4)
-     :(year||''),
-   vote:best.vote_average||0,
-   poster:best.poster_path
-     ?'https://image.tmdb.org/t/p/w500'+best.poster_path
-     :'',
-   backdrop:best.backdrop_path
-     ?'https://image.tmdb.org/t/p/w1280'+best.backdrop_path
-     :''
- };
-
-}
-
-
-/* =========================================================
-   ELEGIR COINCIDENCIA TMDB
-========================================================= */
-
-function chooseBestMovieMatch(query,year,results){
-
- const nq=normalizeForCompare(query);
-
- let best=null;
-
- let bestScore=-999;
-
- for(const r of results.slice(0,10)){
-
-   const title=
-     r.title||
-     r.original_title||
-     '';
-
-   const nt=normalizeForCompare(title);
-
-   let score=0;
-
-   if(nt===nq){
-     score+=100;
-   }
-
-   if(nt.includes(nq)||nq.includes(nt)){
-     score+=35;
-   }
-
-   const queryWords=nq.split(' ').filter(Boolean);
-
-   const titleWords=new Set(
-     nt.split(' ').filter(Boolean)
-   );
-
-   for(const w of queryWords){
-     if(titleWords.has(w)){
-       score+=6;
-     }
-   }
-
-   const ry=r.release_date
-     ?Number(r.release_date.slice(0,4))
-     :null;
-
-   if(year&&ry){
-
-     if(year===ry){
-       score+=45;
-     }else if(Math.abs(year-ry)===1){
-       score+=8;
-     }else{
-       score-=Math.min(
-         30,
-         Math.abs(year-ry)*4
-       );
-     }
-
-   }
-
-   score+=(r.popularity||0)/100;
-
-   if(score>bestScore){
-
-     bestScore=score;
-
-     best=r;
-
-   }
-
- }
-
- /*
-   Evita usar una portada claramente incorrecta.
- */
-
- if(bestScore<18){
-   return null;
- }
-
- return best;
-
-}
-
-
-function normalizeForCompare(s){
-
- return String(s||'')
-   .normalize('NFD')
-   .replace(/[\u0300-\u036f]/g,'')
-   .toLowerCase()
-   .replace(/[^a-z0-9]+/g,' ')
-   .replace(/\s+/g,' ')
-   .trim();
-
-}
-
-
-/* =========================================================
-   ENRIQUECIMIENTO PROGRESIVO
-========================================================= */
-
-async function startMetadataEnrichment(generation){
-
- if(enrichRunning)return;
-
- if(!getTmdbKey()){
-   return;
- }
-
- enrichRunning=true;
-
- try{
-
-   const queue=movies
-     .filter(m=>!metaCache.has(m.realId))
-     .slice(0,120);
-
-   for(let i=0;i<queue.length;i++){
-
-     if(generation!==enrichGeneration){
-       break;
-     }
-
-     const movie=queue[i];
-
-     try{
-
-       const meta=await fetchMovieMetadata(movie);
-
-       if(meta){
-
-         metaCache.set(
-           movie.realId,
-           meta
-         );
-
-       }else{
-
-         /*
-           Guardamos una marca para no consultar
-           la misma película una y otra vez.
-         */
-
-         metaCache.set(
-           movie.realId,
-           {
-             titleEs:cleanTitle(movie.name),
-             noMatch:true
-           }
-         );
-
-       }
-
-       if(i%5===0){
-         saveMetaCache();
-         render();
-       }
-
-     }catch(e){
-
-       console.warn(
-         'TMDB:',
-         movie.name,
-         e
-       );
-
-     }
-
-     /*
-       Pequeña pausa para no saturar la API.
-     */
-
-     await new Promise(
-       resolve=>setTimeout(resolve,90)
-     );
-
-   }
-
-   saveMetaCache();
-
-   if(generation===enrichGeneration){
-     render();
-   }
-
- }finally{
-
-   enrichRunning=false;
-
- }
-
-}
-  /* =========================================================
-   PREFERENCIA DE AUDIO LATINO
-========================================================= */
-
-function updateAudioPrefButton(){
-
- const b=document.getElementById('audioPrefBtn');
-
- if(!b)return;
-
- b.textContent=
-   '🎧 Preferir Latino: '+
-   (preferLatino?'ON':'OFF');
-
-}
-
-
-function toggleAudioPreference(){
-
- preferLatino=!preferLatino;
-
- localStorage.setItem(
-   AUDIO_PREF_KEY,
-   preferLatino?'1':'0'
- );
-
- updateAudioPrefButton();
-
- msg(
-   preferLatino
-   ?'CineKids intentará priorizar Español Latino cuando el navegador permita seleccionar las pistas.'
-   :'Preferencia automática de audio desactivada.'
- );
-
-}
-
-
-/* =========================================================
-   PUNTUAR PISTAS DE AUDIO
-========================================================= */
-
-function audioLabelScore(track){
-
- const label=(
-   (track?.label||'')+
-   ' '+
-   (track?.language||'')
- ).toLowerCase();
-
- if(
-   label.includes('latino')||
-   label.includes('latam')||
-   label.includes('español latino')||
-   label.includes('spanish latin')||
-   label.includes('es-419')
- ){
-   return 100;
- }
-
- if(
-   label.includes('es-mx')||
-   label.includes('mexico')||
-   label.includes('méxico')
- ){
-   return 95;
- }
-
- if(
-   label.includes('español')||
-   label.includes('spanish')
- ){
-   return 80;
- }
-
- if(
-   /\b(es|spa)\b/.test(label)
- ){
-   return 70;
- }
-
- return 0;
-
-}
-
-
-/* =========================================================
-   INTENTAR SELECCIONAR LATINO
-========================================================= */
-
-function trySelectLatinoTrack(video){
-
- try{
-
-   const tracks=video.audioTracks;
-
-   if(!tracks||!tracks.length){
-     return false;
-   }
-
-   let best=null;
-
-   let bestScore=0;
-
-   for(let i=0;i<tracks.length;i++){
-
-     const track=tracks[i];
-
-     const score=audioLabelScore(track);
-
-     if(score>bestScore){
-
-       best=track;
-
-       bestScore=score;
-
-     }
-
-   }
-
-   if(!best||bestScore<=0){
-     return false;
-   }
-
-   for(let i=0;i<tracks.length;i++){
-
-     tracks[i].enabled=
-       tracks[i]===best;
-
-   }
-
-   msg(
-     '🎧 Audio seleccionado: '+
-     (
-       best.label||
-       best.language||
-       'Español Latino'
-     )
-   );
-
-   return true;
-
- }catch(e){
-
-   console.warn(
-     'Selección de audio:',
-     e
-   );
-
-   return false;
-
- }
-
-}
-
-
-/* =========================================================
-   BUSCAR PELÍCULA POR ID
-========================================================= */
-
-function findMovieById(id){
-
- return movies.find(
-   x=>x.realId===id||x.id===id
- );
-
-}
-
-
-/* =========================================================
-   ABRIR PELÍCULA
-========================================================= */
-
-async function openMovie(id){
-
- const movie=findMovieById(id);
-
- if(!movie){
-   msg('No se encontró la película.');
-   return;
- }
-
- currentMovie=movie;
-
- currentMovieId=movie.realId||movie.id;
-
- const title=cleanTitle(movie.name);
-
- const meta=
-   metaCache.get(currentMovieId)||
-   {};
-
- const displayTitle=
-   meta.titleEs||
-   meta.title||
-   title;
-
- document.getElementById('ptitle').textContent=
-   displayTitle;
-
- const chips=[];
-
- if(meta.year){
-   chips.push(meta.year);
- }
-
- if(meta.vote){
-   chips.push(
-     '★ '+
-     Number(meta.vote).toFixed(1)
-   );
- }
-
- if(movie.isShortcut){
-   chips.push('Acceso directo');
- }
-
- document.getElementById('detailChips').innerHTML=
-   chips.map(
-     x=>`<span class="chip">${escapeHtml(x)}</span>`
-   ).join('');
-
- document.getElementById('pmeta').textContent=
-   meta.originalTitle&&
-   meta.originalTitle!==displayTitle
-   ?meta.originalTitle
-   :(movie.realMime||movie.mimeType||'Video');
-
- document.getElementById('overview').textContent=
-   meta.overview||
-   'Sin descripción disponible.';
-
- const detailPoster=
-   document.getElementById('detailPoster');
-
- if(meta.poster){
-
-   detailPoster.src=meta.poster;
-
-   detailPoster.style.display='block';
-
- }else{
-
-   detailPoster.removeAttribute('src');
-
-   detailPoster.style.display='none';
-
- }
-
- const native=
-   document.getElementById('nativePlayer');
-
- const drive=
-   document.getElementById('drivePlayer');
-
- /*
-   Reiniciar reproductores
- */
-
- native.pause();
-
- native.removeAttribute('src');
-
- native.style.display='none';
-
- drive.style.display='block';
-
- /*
-   REPRODUCTOR PRINCIPAL DE GOOGLE DRIVE
- */
-
- drive.src=
-   'https://drive.google.com/file/d/'+
-   encodeURIComponent(currentMovieId)+
-   '/preview';
-
- document.getElementById('player').showModal();
-
-}
-
-
-/* =========================================================
-   MODO NATIVO EXPERIMENTAL
-========================================================= */
-
-async function tryNativeLatino(){
-
- if(!currentMovie||!currentMovieId){
-
-   msg('Primero abre una película.');
-
-   return;
-
- }
-
- if(!accessToken){
-
-   msg(
-     'La sesión de Google no está activa. '+
-     'Pulsa Continuar con Google.'
-   );
-
-   return;
-
- }
-
- const native=
-   document.getElementById('nativePlayer');
-
- const drive=
-   document.getElementById('drivePlayer');
-
- msg(
-   'Preparando modo de audio Latino…'
- );
-
- try{
-
-   /*
-     Descarga autenticada desde Drive.
-
-     Este modo es experimental porque algunos MKV,
-     códecs o películas muy grandes no pueden
-     reproducirse directamente en Chrome/Android.
-   */
-
-   const url=
-     'https://www.googleapis.com/drive/v3/files/'+
-     encodeURIComponent(currentMovieId)+
-     '?alt=media&supportsAllDrives=true';
-
-   const r=await fetch(
-     url,
-     {
-       headers:{
-         Authorization:
-           'Bearer '+accessToken
-       }
-     }
-   );
-
-   if(r.status===401){
-
-     accessToken=null;
-
-     document.getElementById(
-       'loginBtn'
-     ).textContent='Continuar con Google';
-
-     throw new Error(
-       'La sesión de Google expiró'
-     );
-
-   }
-
-   if(!r.ok){
-
-     throw new Error(
-       'HTTP '+r.status
-     );
-
-   }
-
-   const blob=await r.blob();
-
-   /*
-     Liberar video anterior.
-   */
-
-   if(nativeObjectUrl){
-
-     URL.revokeObjectURL(
-       nativeObjectUrl
-     );
-
-     nativeObjectUrl=null;
-
-   }
-
-   nativeObjectUrl=
-     URL.createObjectURL(blob);
-
-   /*
-     Cambiar del reproductor Drive
-     al reproductor nativo.
-   */
-
-   drive.src='about:blank';
-
-   drive.style.display='none';
-
-   native.style.display='block';
-
-   native.src=nativeObjectUrl;
-
-   native.onloadedmetadata=()=>{
-
-     let selected=false;
-
-     if(preferLatino){
-
-       selected=
-         trySelectLatinoTrack(native);
-
-     }
-
-     if(!selected){
-
-       msg(
-         'El navegador no permite seleccionar '+
-         'automáticamente una pista Latino en este archivo. '+
-         'Puedes regresar al reproductor de Google Drive.'
-       );
-
-     }
-
-     native.play().catch(()=>{});
-
-   };
-
-   native.onerror=()=>{
-
-     msg(
-       'Este formato o códec no es compatible '+
-       'con el reproductor nativo. '+
-       'Usa el reproductor de Google Drive.'
-     );
-
-   };
-
- }catch(e){
-
-   native.pause();
-
-   native.removeAttribute('src');
-
-   native.style.display='none';
-
-   drive.style.display='block';
-
-   drive.src=
-     'https://drive.google.com/file/d/'+
-     encodeURIComponent(currentMovieId)+
-     '/preview';
-
-   msg(
-     'No se pudo utilizar el modo Latino: '+
-     e.message+
-     '. Se mantiene Google Drive.'
-   );
-
- }
-
-}
-
-
-/* =========================================================
-   ABRIR REPRODUCTOR COMPLETO DE DRIVE
-========================================================= */
-
-function openFullPlayer(){
-
- if(!currentMovieId){
-
-   msg(
-     'No hay una película seleccionada.'
-   );
-
-   return;
-
- }
-
- const url=
-   'https://drive.google.com/file/d/'+
-   encodeURIComponent(currentMovieId)+
-   '/preview';
-
- window.open(
-   url,
-   '_blank',
-   'noopener,noreferrer'
- );
-
-}
-
-
-/* =========================================================
-   CERRAR REPRODUCTOR
-========================================================= */
-
-function closePlayer(){
-
- const iframe=
-   document.getElementById('drivePlayer');
-
- const native=
-   document.getElementById('nativePlayer');
-
- /*
-   Detener Google Drive.
- */
-
- iframe.src='about:blank';
-
- iframe.style.display='block';
-
- /*
-   Detener reproductor nativo.
- */
-
- native.pause();
-
- native.removeAttribute('src');
-
- native.style.display='none';
-
- /*
-   Liberar memoria.
- */
-
- if(nativeObjectUrl){
-
-   URL.revokeObjectURL(
-     nativeObjectUrl
-   );
-
-   nativeObjectUrl=null;
-
- }
-
- currentMovie=null;
-
- currentMovieId=null;
-
- document.getElementById(
-   'player'
- ).close();
-
-}
-
-
-/* =========================================================
-   CERRAR SESIÓN
-========================================================= */
-
-function logout(){
-
- /*
-   No revocamos el token de Google deliberadamente.
-
-   Esto mantiene el flujo de OAuth sencillo
-   y evita el problema anterior donde después
-   no permitía volver a iniciar sesión.
- */
-
- accessToken=null;
-
- currentDrive=null;
-
- navigation=[];
-
- items=[];
-
- movies=[];
-
- enrichGeneration++;
-
- document.getElementById(
-   'driveChooser'
- ).innerHTML='';
-
- document.getElementById(
-   'loginBtn'
- ).textContent=
-   'Continuar con Google';
-
- breadcrumb.style.display='none';
-
- sectionTitle.textContent=
-   'Tu biblioteca';
-
- search.value='';
-
- render();
-
- msg(
-   'Sesión cerrada. Puedes volver a iniciar sesión cuando quieras.'
- );
-
-}
-
-
-/* =========================================================
-   AJUSTES
-========================================================= */
-
-function settings(){
-
- updateAudioPrefButton();
-
- const googleConfigured=
-   !!(
-     window.CINEKIDS?.GOOGLE_CLIENT_ID&&
-     !window.CINEKIDS.GOOGLE_CLIENT_ID.includes(
-       'PON_AQUI'
-     )
-   );
-
- const tmdbConfigured=
-   !!getTmdbKey();
-
- msg(
-   'AJUSTES DE CINEKIDS\n\n'+
-   'Google conectado: '+
-   (accessToken?'Sí':'No')+
-   '\n'+
-   'Google OAuth configurado: '+
-   (googleConfigured?'Sí':'No')+
-   '\n'+
-   'TMDB configurado: '+
-   (tmdbConfigured?'Sí':'No')+
-   '\n'+
-   'Preferir Español Latino: '+
-   (preferLatino?'Sí':'No')
- );
-
-}
-
-
-/* =========================================================
-   INSTALACIÓN PWA
-   Se conserva internamente aunque quitamos
-   el botón Instalar de la interfaz.
-========================================================= */
-
-addEventListener(
- 'beforeinstallprompt',
- e=>{
-
-   e.preventDefault();
-
-   deferredPrompt=e;
-
- }
-);
-
-
-/* =========================================================
-   SERVICE WORKER
-========================================================= */
-
-if('serviceWorker'in navigator){
-
- navigator.serviceWorker
-   .register('sw.js')
-   .catch(
-     e=>console.warn(
-       'Service Worker:',
-       e
-     )
-   );
-
-}
-
-
-/* =========================================================
-   PRIMER RENDER
-========================================================= */
-
-updateAudioPrefButton();
-
-render();
-
-</script>
-</body>
-</html>
+1	<!doctype html> 
+2	<html lang="es"> 
+3	<head> 
+4	<meta charset="utf-8"> 
+5	<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"> 
+6	<meta name="theme-color" content="#07111f"> 
+7	<link rel="manifest" href="manifest.json"> 
+8	<title>CineKids</title> 
+9	<style> 
+10	:root{--bg:#07111f;--panel:#0c182a;--card:#101e33;--line:#20314b;--text:#fff;--muted:#9db0c9;--accent:#a78bfa} 
+11	*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07111f,#091524);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh} 
+12	button,input{font:inherit}.app{max-width:1180px;margin:auto;padding:18px 18px 110px} 
+13	header{display:flex;justify-content:space-between;align-items:center}.brand{font-size:29px;font-weight:900}.brand span{color:var(--accent)} 
+14	.profile{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#7c3aed,#0ea5e9);font-weight:900} 
+15	.hero{margin:20px 0 18px;padding:26px;border-radius:26px;background:radial-gradient(circle at 80% 15%,rgba(167,139,250,.30),transparent 28%),linear-gradient(135deg,#10213a,#231442);border:1px solid rgba(255,255,255,.07)} 
+16	.hero h1{font-size:clamp(2rem,7vw,4rem);line-height:1;margin:8px 0 12px}.muted{color:var(--muted);line-height:1.5} 
+17	.actions,.driveChooser{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:800;cursor:pointer}.primary{background:#fff;color:#111827}.secondary{background:#17263d;color:#fff;border:1px solid var(--line)} 
+18	.notice{display:none;margin-top:14px;padding:13px 14px;border-radius:14px;background:#0c2139;color:#cbe9ff;white-space:pre-line} 
+19	.breadcrumb{display:none;align-items:center;gap:10px;margin:16px 0;padding:12px;border-radius:14px;background:#0c182a;border:1px solid var(--line)} 
+20	.breadcrumb button{border:0;background:#17263d;color:white;border-radius:10px;padding:9px 13px;font-weight:800}.breadcrumb span{color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap} 
+21	.search{width:100%;padding:14px 16px;background:#091426;color:#fff;border:1px solid var(--line);border-radius:14px;font-size:16px} 
+22	.tabs{display:flex;gap:8px;overflow:auto;margin:16px 0}.tabs button{white-space:nowrap;background:#122038;color:#b9c8da;border:1px solid var(--line);padding:10px 13px;border-radius:999px}.tabs button.active{background:#fff;color:#111827} 
+23	.section-head{display:flex;justify-content:space-between;align-items:center;margin:22px 0 12px}.section-head h2{margin:0;font-size:20px}.section-head span{color:var(--muted);font-size:13px} 
+24	.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}@media(min-width:700px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(min-width:1050px){.grid{grid-template-columns:repeat(6,minmax(0,1fr))}} 
+25	.card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;position:relative}.poster{aspect-ratio:2/3;display:grid;place-items:center;padding:12px;text-align:center;font-weight:850;background:linear-gradient(145deg,#273c55,#121c2d);overflow:hidden;position:relative} 
+26	.poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.posterShade{position:absolute;inset:auto 0 0 0;padding:28px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.82));z-index:1;text-align:left} 
+27	.folderPoster{background:linear-gradient(145deg,#243a5e,#151f35)}.folderIcon,.movieIcon{display:block;font-size:52px;margin-bottom:10px}.meta{padding:11px}.title{font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.small{font-size:12px;color:var(--muted);margin-top:4px}.heart{position:absolute;right:8px;top:8px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:white;font-size:18px;z-index:3} 
+28	.loadMore{grid-column:1/-1;display:flex;justify-content:center;padding:14px}.enrichStatus{grid-column:1/-1;padding:8px 12px;border-radius:12px;background:#0c2139;color:#cbe9ff;font-size:13px} 
+29	nav{position:fixed;left:12px;right:12px;bottom:10px;max-width:760px;margin:auto;background:rgba(8,18,32,.94);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);z-index:50}nav button{background:none;border:0;color:#aab7c9;padding:8px 2px;font-size:12px}nav button.active{color:white} 
+30	dialog{width:min(95vw,960px);border:0;border-radius:22px;padding:0;background:#07111f;color:white;overflow:hidden}dialog::backdrop{background:rgba(0,0,0,.82)}#drivePlayer{width:100%;height:min(66vh,600px);border:0;background:#000;display:block}.dlg{padding:16px}.empty{padding:30px;text-align:center;color:var(--muted);grid-column:1/-1} 
+31	.detailHero{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:start}.detailPoster{width:110px;aspect-ratio:2/3;border-radius:12px;object-fit:cover;background:#17263d}.detailTitle{margin:0 0 6px;font-size:22px}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chip{font-size:12px;background:#17263d;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:#d8e3f3}.overview{margin-top:12px;color:#d6e1ef;line-height:1.5} 
+32	 
+33	/* ===== CINEKIDS CINEMA UI v10 ===== */ 
+34	 
+35	html{ 
+36	  background:#02060c; 
+37	} 
+38	 
+39	body{ 
+40	  position:relative; 
+41	  overflow-x:hidden; 
+42	  background: 
+43	    radial-gradient(circle at 18% 10%, rgba(124,58,237,.20), transparent 28%), 
+44	    radial-gradient(circle at 82% 16%, rgba(14,165,233,.16), transparent 24%), 
+45	    radial-gradient(circle at 50% 95%, rgba(249,115,22,.08), transparent 34%), 
+46	    linear-gradient(180deg,#040914 0%,#07111f 40%,#030812 100%); 
+47	  background-attachment:fixed; 
+48	} 
+49	 
+50	body::before{ 
+51	  content:""; 
+52	  position:fixed; 
+53	  inset:0; 
+54	  pointer-events:none; 
+55	  z-index:-2; 
+56	  opacity:.22; 
+57	  background: 
+58	    repeating-linear-gradient( 
+59	      90deg, 
+60	      transparent 0 44px, 
+61	      rgba(255,255,255,.025) 45px, 
+62	      transparent 46px 90px 
+63	    ); 
+64	} 
+65	 
+66	body::after{ 
+67	  content:""; 
+68	  position:fixed; 
+69	  inset:0; 
+70	  pointer-events:none; 
+71	  z-index:-1; 
+72	  background: 
+73	    radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,.50) 100%); 
+74	} 
+75	 
+76	.app{ 
+77	  max-width:1280px; 
+78	  padding:18px 18px 110px; 
+79	} 
+80	 
+81	header{ 
+82	  position:sticky; 
+83	  top:0; 
+84	  z-index:40; 
+85	  margin:-18px -18px 0; 
+86	  padding:18px; 
+87	  background:linear-gradient(180deg,rgba(3,8,18,.92),rgba(3,8,18,.55),transparent); 
+88	  backdrop-filter:blur(12px); 
+89	} 
+90	 
+91	.brand{ 
+92	  letter-spacing:-1.2px; 
+93	  text-shadow:0 8px 30px rgba(167,139,250,.18); 
+94	} 
+95	 
+96	.hero{ 
+97	  position:relative; 
+98	  overflow:hidden; 
+99	  min-height:270px; 
+100	  display:flex; 
+101	  flex-direction:column; 
+102	  justify-content:flex-end; 
+103	  padding:30px; 
+104	  border-radius:30px; 
+105	  background: 
+106	    linear-gradient(90deg,rgba(5,9,18,.92),rgba(12,18,35,.70) 52%,rgba(29,15,55,.64)), 
+107	    radial-gradient(circle at 78% 26%,rgba(124,58,237,.52),transparent 28%), 
+108	    radial-gradient(circle at 92% 72%,rgba(14,165,233,.34),transparent 28%); 
+109	  border:1px solid rgba(255,255,255,.09); 
+110	  box-shadow: 
+111	    0 30px 80px rgba(0,0,0,.38), 
+112	    inset 0 1px 0 rgba(255,255,255,.07); 
+113	} 
+114	 
+115	.hero::before{ 
+116	  content:""; 
+117	  position:absolute; 
+118	  width:250px; 
+119	  height:250px; 
+120	  right:-55px; 
+121	  top:-80px; 
+122	  border-radius:50%; 
+123	  border:22px solid rgba(255,255,255,.035); 
+124	  box-shadow: 
+125	    0 0 0 26px rgba(255,255,255,.018), 
+126	    0 0 0 52px rgba(255,255,255,.010); 
+127	} 
+128	 
+129	.hero::after{ 
+130	  content:"▶"; 
+131	  position:absolute; 
+132	  right:42px; 
+133	  bottom:28px; 
+134	  font-size:88px; 
+135	  line-height:1; 
+136	  color:rgba(255,255,255,.055); 
+137	  transform:rotate(-4deg); 
+138	} 
+139	 
+140	.hero>*{ 
+141	  position:relative; 
+142	  z-index:2; 
+143	} 
+144	 
+145	.hero h1{ 
+146	  max-width:760px; 
+147	  letter-spacing:-2px; 
+148	  text-shadow:0 6px 28px rgba(0,0,0,.45); 
+149	} 
+150	 
+151	.actions{ 
+152	  margin-top:20px; 
+153	} 
+154	 
+155	.btn{ 
+156	  min-height:48px; 
+157	  transition:transform .18s ease,box-shadow .18s ease,background .18s ease; 
+158	} 
+159	 
+160	.btn:active{ 
+161	  transform:scale(.97); 
+162	} 
+163	 
+164	.primary{ 
+165	  box-shadow:0 10px 32px rgba(255,255,255,.10); 
+166	} 
+167	 
+168	.notice{ 
+169	  border:1px solid rgba(56,189,248,.16); 
+170	  background:rgba(7,30,53,.72); 
+171	  backdrop-filter:blur(12px); 
+172	} 
+173	 
+174	.breadcrumb{ 
+175	  position:sticky; 
+176	  top:76px; 
+177	  z-index:30; 
+178	  background:rgba(8,18,32,.86); 
+179	  backdrop-filter:blur(16px); 
+180	  box-shadow:0 16px 38px rgba(0,0,0,.20); 
+181	} 
+182	 
+183	.search{ 
+184	  position:sticky; 
+185	  top:144px; 
+186	  z-index:29; 
+187	  height:54px; 
+188	  background:rgba(7,17,31,.84); 
+189	  backdrop-filter:blur(14px); 
+190	  box-shadow:0 14px 34px rgba(0,0,0,.16); 
+191	} 
+192	 
+193	.search:focus{ 
+194	  outline:none; 
+195	  border-color:rgba(167,139,250,.72); 
+196	  box-shadow:0 0 0 3px rgba(167,139,250,.10),0 14px 34px rgba(0,0,0,.18); 
+197	} 
+198	 
+199	.section-head{ 
+200	  margin-top:28px; 
+201	} 
+202	 
+203	.section-head h2{ 
+204	  font-size:24px; 
+205	  letter-spacing:-.5px; 
+206	} 
+207	 
+208	.grid{ 
+209	  gap:16px; 
+210	} 
+211	 
+212	.card{ 
+213	  background:linear-gradient(180deg,rgba(16,30,51,.96),rgba(7,17,31,.98)); 
+214	  border-color:rgba(255,255,255,.075); 
+215	  box-shadow:0 12px 34px rgba(0,0,0,.20); 
+216	  transform:translateZ(0); 
+217	  transition:transform .20s ease,border-color .20s ease,box-shadow .20s ease; 
+218	} 
+219	 
+220	.card:active{ 
+221	  transform:scale(.985); 
+222	} 
+223	 
+224	.poster{ 
+225	  background: 
+226	    radial-gradient(circle at 50% 12%,rgba(75,105,150,.25),transparent 35%), 
+227	    linear-gradient(145deg,#182840,#09121f); 
+228	} 
+229	 
+230	.poster::after{ 
+231	  content:""; 
+232	  position:absolute; 
+233	  inset:0; 
+234	  pointer-events:none; 
+235	  box-shadow:inset 0 -60px 60px rgba(0,0,0,.10); 
+236	} 
+237	 
+238	.meta{ 
+239	  background:linear-gradient(180deg,rgba(14,28,48,.92),rgba(9,20,35,.96)); 
+240	} 
+241	 
+242	.title{ 
+243	  font-size:15px; 
+244	  line-height:1.25; 
+245	} 
+246	 
+247	.heart{ 
+248	  backdrop-filter:blur(8px); 
+249	  border:1px solid rgba(255,255,255,.08); 
+250	} 
+251	 
+252	nav{ 
+253	  max-width:720px; 
+254	  left:14px; 
+255	  right:14px; 
+256	  bottom:12px; 
+257	  background:rgba(5,12,23,.90); 
+258	  border-color:rgba(255,255,255,.10); 
+259	  box-shadow:0 18px 48px rgba(0,0,0,.48); 
+260	} 
+261	 
+262	nav button{ 
+263	  min-height:52px; 
+264	  border-radius:12px; 
+265	} 
+266	 
+267	nav button:active{ 
+268	  background:rgba(255,255,255,.05); 
+269	} 
+270	 
+271	dialog{ 
+272	  box-shadow:0 40px 120px rgba(0,0,0,.65); 
+273	} 
+274	 
+275	#drivePlayer{ 
+276	  background:#000; 
+277	} 
+278	 
+279	/* Android phones */ 
+280	@media(max-width:699px){ 
+281	  .app{ 
+282	    padding-left:14px; 
+283	    padding-right:14px; 
+284	    padding-bottom:105px; 
+285	  } 
+286	 
+287	  header{ 
+288	    margin-left:-14px; 
+289	    margin-right:-14px; 
+290	    padding-left:14px; 
+291	    padding-right:14px; 
+292	  } 
+293	 
+294	  .hero{ 
+295	    min-height:250px; 
+296	    padding:24px 22px; 
+297	    border-radius:26px; 
+298	  } 
+299	 
+300	  .hero h1{ 
+301	    font-size:clamp(2rem,11vw,3.1rem); 
+302	  } 
+303	 
+304	  .hero::after{ 
+305	    font-size:64px; 
+306	    right:22px; 
+307	  } 
+308	 
+309	  .actions{ 
+310	    display:grid; 
+311	    grid-template-columns:1fr; 
+312	  } 
+313	 
+314	  .actions .btn{ 
+315	    width:100%; 
+316	  } 
+317	 
+318	  .search{ 
+319	    top:72px; 
+320	  } 
+321	 
+322	  .breadcrumb{ 
+323	    top:72px; 
+324	  } 
+325	 
+326	  .breadcrumb + .search{ 
+327	    top:137px; 
+328	  } 
+329	 
+330	  .grid{ 
+331	    grid-template-columns:repeat(2,minmax(0,1fr)); 
+332	    gap:12px; 
+333	  } 
+334	 
+335	  .card{ 
+336	    border-radius:20px; 
+337	  } 
+338	 
+339	  .poster{ 
+340	    aspect-ratio:2/3; 
+341	  } 
+342	 
+343	  nav{ 
+344	    grid-template-columns:repeat(4,1fr); 
+345	    border-radius:22px; 
+346	    padding:6px; 
+347	  } 
+348	} 
+349	 
+350	/* Desktop / tablet mode */ 
+351	@media(min-width:900px){ 
+352	  .app{ 
+353	    padding:24px 28px 90px; 
+354	  } 
+355	 
+356	  header{ 
+357	    margin:-24px -28px 0; 
+358	    padding:20px 28px; 
+359	  } 
+360	 
+361	  .hero{ 
+362	    min-height:340px; 
+363	    padding:42px; 
+364	  } 
+365	 
+366	  .hero .muted{ 
+367	    max-width:640px; 
+368	    font-size:18px; 
+369	  } 
+370	 
+371	  .hero h1{ 
+372	    font-size:64px; 
+373	    max-width:820px; 
+374	  } 
+375	 
+376	  .actions{ 
+377	    max-width:520px; 
+378	  } 
+379	 
+380	  .search{ 
+381	    position:relative; 
+382	    top:auto; 
+383	    max-width:620px; 
+384	    margin:24px 0 10px; 
+385	  } 
+386	 
+387	  .breadcrumb{ 
+388	    position:relative; 
+389	    top:auto; 
+390	  } 
+391	 
+392	  .section-head{ 
+393	    margin-top:34px; 
+394	  } 
+395	 
+396	  .grid{ 
+397	    grid-template-columns:repeat(5,minmax(0,1fr)); 
+398	    gap:18px; 
+399	  } 
+400	 
+401	  .card:hover{ 
+402	    transform:translateY(-5px) scale(1.015); 
+403	    border-color:rgba(167,139,250,.32); 
+404	    box-shadow:0 24px 55px rgba(0,0,0,.38); 
+405	  } 
+406	 
+407	  .poster{ 
+408	    aspect-ratio:2/3; 
+409	  } 
+410	 
+411	  nav{ 
+412	    position:sticky; 
+413	    top:10px; 
+414	    bottom:auto; 
+415	    left:auto; 
+416	    right:auto; 
+417	    margin:10px 0 20px auto; 
+418	    max-width:430px; 
+419	  } 
+420	} 
+421	 
+422	@media(min-width:1180px){ 
+423	  .grid{ 
+424	    grid-template-columns:repeat(6,minmax(0,1fr)); 
+425	  } 
+426	} 
+427	 
+428	</style> 
+429	<script src="https://accounts.google.com/gsi/client" async defer></script> 
+430	<script src="config.js?v=20260825-1124"></script> 
+431	</head> 
+432	<body> 
+433	<div class="app"> 
+434	<header><div class="brand">Cine<span>Kids</span></div><div class="profile">CK</div></header> 
+435	<section class="hero"> 
+436	<div class="muted">Tu cine familiar</div> 
+437	<h1>Películas desde tu Google Drive</h1> 
+438	<div class="muted">Tu biblioteca de cine, organizada desde Google Drive.</div> 
+439	<div class="actions"> 
+440	<button class="btn primary" id="loginBtn" onclick="googleLogin()">Continuar con Google</button> 
+441	 
+442	<button class="btn secondary" onclick="logout()">Cerrar sesión</button><button class="btn secondary" id="audioPrefBtn" onclick="toggleAudioPreference()">🎧 Preferir Latino: ON</button> 
+443	</div> 
+444	<div id="notice" class="notice"></div> 
+445	<div id="driveChooser" class="driveChooser"></div> 
+446	</section> 
+447	<div id="breadcrumb" class="breadcrumb"><button onclick="goBack()">← Atrás</button><span id="pathName"></span></div> 
+448	<input id="search" class="search" placeholder="Buscar carpeta o película…" oninput="resetRender()"> 
+449	 
+450	<div class="section-head"><h2 id="sectionTitle">Tu biblioteca</h2><span id="count"></span></div> 
+451	<div id="grid" class="grid"></div> 
+452	</div> 
+453	<nav> 
+454	<button class="active" onclick="home()">⌂<br>Inicio</button> 
+455	<button onclick="focusSearch()">⌕<br>Buscar</button> 
+456	<button onclick="showFavorites(this)">♡<br>Favoritos</button> 
+457	<button onclick="settings()">⚙<br>Ajustes</button> 
+458	</nav> 
+459	<dialog id="player"> 
+460	<iframe id="drivePlayer" allow="autoplay; fullscreen" allowfullscreen></iframe> 
+461	<video id="nativePlayer" controls playsinline style="display:none;width:100%;background:#000;max-height:66vh"></video> 
+462	<div class="dlg"> 
+463	<div class="detailHero"> 
+464	<img id="detailPoster" class="detailPoster" alt=""> 
+465	<div> 
+466	<h2 id="ptitle" class="detailTitle"></h2> 
+467	<div id="pmeta" class="muted"></div> 
+468	<div id="detailChips" class="chips"></div> 
+469	</div> 
+470	</div> 
+471	<div id="overview" class="overview"></div> 
+472	<div class="actions"><button class="btn primary" id="nativeAudioBtn" onclick="tryNativeLatino()">🎧 Intentar Español Latino</button><button class="btn secondary" id="fullPlayerBtn" onclick="openFullPlayer()">Abrir reproductor Drive</button><button class="btn secondary" onclick="closePlayer()">Cerrar</button></div> 
+473	</div> 
+474	</dialog> 
+475	<script> 
+476	let currentMovieId=null; 
+477	let currentMovie=null; 
+478	let nativeObjectUrl=null; 
+479	const AUDIO_PREF_KEY='ck_prefer_latino'; 
+480	let preferLatino=localStorage.getItem(AUDIO_PREF_KEY)!=='0'; 
+481	let tokenClient,accessToken=null,items=[],movies=[],filter='Todos',onlyFav=false,deferredPrompt=null,currentDrive=null,navigation=[],renderLimit=60; 
+482	let enrichRunning=false,enrichGeneration=0; 
+483	let authBusy=false; 
+484	const fav=new Set(JSON.parse(localStorage.getItem('ck_fav')||'[]')); 
+485	const metaCache=new Map(JSON.parse(localStorage.getItem('ck_meta_cache')||'[]')); 
+486	const notice=document.getElementById('notice'),grid=document.getElementById('grid'),count=document.getElementById('count'),search=document.getElementById('search'),sectionTitle=document.getElementById('sectionTitle'),breadcrumb=document.getElementById('breadcrumb'),pathName=document.getElementById('pathName'); 
+487	function msg(t){notice.style.display='block';notice.textContent=t} 
+488	function saveMetaCache(){try{localStorage.setItem('ck_meta_cache',JSON.stringify([...metaCache.entries()].slice(-500)))}catch{}} 
+489	 
+490	 
+491	 
+492	function initGoogle(){ 
+493	  if(!window.google?.accounts?.oauth2){ 
+494	    setTimeout(initGoogle,400); 
+495	    return; 
+496	  } 
+497	 
+498	  const id=window.CINEKIDS?.GOOGLE_CLIENT_ID||''; 
+499	 
+500	  if(!id||id.includes('PON_AQUI')){ 
+501	    return; 
+502	  } 
+503	 
+504	  tokenClient=google.accounts.oauth2.initTokenClient({ 
+505	    client_id:id, 
+506	    scope:'https://www.googleapis.com/auth/drive.readonly', 
+507	 
+508	    callback:async r=>{ 
+509	      if(r.error){ 
+510	        msg('Error de autenticación: '+r.error); 
+511	        return; 
+512	      } 
+513	 
+514	      accessToken=r.access_token; 
+515	 
+516	      document.getElementById('loginBtn').textContent='Google conectado'; 
+517	 
+518	      msg('Cuenta conectada. Buscando unidades compartidas…'); 
+519	 
+520	      await loadSharedDrives(); 
+521	    } 
+522	  }); 
+523	} 
+524	 
+525	addEventListener('load',()=>{updateAudioPrefButton();setTimeout(initGoogle,600)}); 
+526	 
+527	function googleLogin(){ 
+528	  const id=window.CINEKIDS?.GOOGLE_CLIENT_ID||''; 
+529	 
+530	  if(!id||id.includes('PON_AQUI')){ 
+531	    msg('Falta conectar Google OAuth. Revisa config.js.'); 
+532	    return; 
+533	  } 
+534	 
+535	  if(!tokenClient){ 
+536	    initGoogle(); 
+537	  } 
+538	 
+539	  if(tokenClient){ 
+540	    tokenClient.requestAccessToken({ 
+541	      prompt:'consent' 
+542	    }); 
+543	  }else{ 
+544	    msg('Google todavía está cargando. Intenta nuevamente en unos segundos.'); 
+545	  } 
+546	} 
+547	 
+548	 
+549	 
+550	async function api(path){const response=await fetch('https://www.googleapis.com/drive/v3/'+path,{headers:{Authorization:'Bearer '+accessToken}});if(!response.ok)throw new Error(await response.text());return response.json()} 
+551	 
+552	async function getFolderLocation(folderId){ 
+553	  try{ 
+554	    const fields=encodeURIComponent('id,name,mimeType,driveId,shortcutDetails(targetId,targetMimeType)'); 
+555	    const data=await api(`files/${encodeURIComponent(folderId)}?supportsAllDrives=true&fields=${fields}`); 
+556	 
+557	    if(data.mimeType===SHORTCUT_MIME && data.shortcutDetails?.targetId){ 
+558	      return getFolderLocation(data.shortcutDetails.targetId); 
+559	    } 
+560	 
+561	    return { 
+562	      id:data.id||folderId, 
+563	      driveId:data.driveId||'', 
+564	      mimeType:data.mimeType||'' 
+565	    }; 
+566	  }catch(e){ 
+567	    console.warn('No se pudo resolver ubicación de carpeta',folderId,e); 
+568	    return {id:folderId,driveId:'',mimeType:''}; 
+569	  } 
+570	} 
+571	 
+572	async function loadSharedDrives(){if(!accessToken)return;try{const allDrives=[];let pageToken='';do{let path='drives?pageSize=100';if(pageToken)path+='&pageToken='+encodeURIComponent(pageToken);const data=await api(path); if(data.files) data.files=data.files.map(normalizeDriveItem);allDrives.push(...(data.drives||[]));pageToken=data.nextPageToken||''}while(pageToken);const chooser=document.getElementById('driveChooser');chooser.innerHTML='';allDrives.forEach(d=>{const button=document.createElement('button');button.className='btn secondary';button.textContent=d.name;button.onclick=()=>openDrive(d);chooser.appendChild(button)});msg(`Encontradas ${allDrives.length} unidades compartidas. Elige una para explorarla.`)}catch(e){msg('No se pudieron leer las unidades compartidas: '+e.message)}} 
+573	async function openDrive(drive){currentDrive=drive;navigation=[{id:drive.id,name:drive.name,root:true}];document.getElementById('driveChooser').innerHTML='';breadcrumb.style.display='flex';await loadFolder(drive.id,drive.name,true)} 
+574	 
+575	async function loadFolder(folderId,folderName,isRoot=false){ 
+576	  if(!accessToken)return; 
+577	 
+578	  msg('Abriendo '+folderName+'…'); 
+579	  pathName.textContent=navigation.map(x=>x.name).join(' › '); 
+580	  sectionTitle.textContent=folderName; 
+581	 
+582	  try{ 
+583	    const result=[]; 
+584	    let pageToken=''; 
+585	 
+586	    const location=await getFolderLocation(folderId); 
+587	    const realFolderId=location.id||folderId; 
+588	    const targetDriveId=location.driveId||''; 
+589	 
+590	    do{ 
+591	      const query=`'${realFolderId}' in parents and trashed = false`; 
+592	      const q=encodeURIComponent(query); 
+593	 
+594	      const fields=encodeURIComponent( 
+595	        'nextPageToken,files('+ 
+596	        'id,name,mimeType,size,modifiedTime,parents,thumbnailLink,webViewLink,description,'+ 
+597	        'shortcutDetails(targetId,targetMimeType)'+ 
+598	        ')' 
+599	      ); 
+600	 
+601	      let path; 
+602	 
+603	      if(targetDriveId){ 
+604	        path= 
+605	          `files?corpora=drive`+ 
+606	          `&driveId=${encodeURIComponent(targetDriveId)}`+ 
+607	          `&includeItemsFromAllDrives=true`+ 
+608	          `&supportsAllDrives=true`+ 
+609	          `&pageSize=1000`+ 
+610	          `&q=${q}`+ 
+611	          `&fields=${fields}`+ 
+612	          `&orderBy=folder,name`; 
+613	      }else{ 
+614	        path= 
+615	          `files?corpora=user`+ 
+616	          `&includeItemsFromAllDrives=true`+ 
+617	          `&supportsAllDrives=true`+ 
+618	          `&pageSize=1000`+ 
+619	          `&q=${q}`+ 
+620	          `&fields=${fields}`+ 
+621	          `&orderBy=folder,name`; 
+622	      } 
+623	 
+624	      if(pageToken){ 
+625	        path+='&pageToken='+encodeURIComponent(pageToken); 
+626	      } 
+627	 
+628	      const data=await api(path); 
+629	 
+630	      for(const raw of (data.files||[])){ 
+631	        result.push(normalizeDriveItem(raw)); 
+632	      } 
+633	 
+634	      pageToken=data.nextPageToken||''; 
+635	 
+636	    }while(pageToken); 
+637	 
+638	    items=result; 
+639	 
+640	    movies=result 
+641	      .filter(f=>looksLikeMovie(f.name,effectiveMime(f))) 
+642	      .map(f=>({...f,cat:detectCategory(f.name)})); 
+643	 
+644	    renderLimit=60; 
+645	    render(); 
+646	 
+647	    const folders=result.filter(isFolder).length; 
+648	    const shortcuts=result.filter(f=>f.isShortcut).length; 
+649	 
+650	    msg( 
+651	      `${folderName}: ${folders} carpetas · ${movies.length} películas`+ 
+652	      (shortcuts?` · ${shortcuts} accesos directos`:'')+ 
+653	      '.' 
+654	    ); 
+655	 
+656	  }catch(e){ 
+657	    console.error('loadFolder',e); 
+658	    msg('Error al abrir la carpeta: '+e.message); 
+659	  } 
+660	} 
+661	 
+662	function isFolder(f){return isFolderItem(f)} 
+663	async function openFolder(id,encodedName){const name=decodeURIComponent(encodedName);navigation.push({id,name,root:false});await loadFolder(id,name,false)} 
+664	async function goBack(){if(navigation.length<=1){navigation=[];currentDrive=null;items=[];movies=[];breadcrumb.style.display='none';pathName.textContent='';sectionTitle.textContent='Tu biblioteca';renderLimit=60;render();await loadSharedDrives();return}navigation.pop();const previous=navigation[navigation.length-1];await loadFolder(previous.id,previous.name,previous.root)} 
+665	 
+666	 
+667	const FOLDER_MIME='application/vnd.google-apps.folder'; 
+668	const SHORTCUT_MIME='application/vnd.google-apps.shortcut'; 
+669	 
+670	function effectiveId(f){ 
+671	  if(f?.isShortcut && f?.targetId)return f.targetId; 
+672	  if(f?.mimeType===SHORTCUT_MIME && f?.shortcutDetails?.targetId){ 
+673	    return f.shortcutDetails.targetId; 
+674	  } 
+675	  return f?.id; 
+676	} 
+677	 
+678	function effectiveMime(f){ 
+679	  if(f?.isShortcut && f?.targetMimeType)return f.targetMimeType; 
+680	  if(f?.mimeType===SHORTCUT_MIME && f?.shortcutDetails?.targetMimeType){ 
+681	    return f.shortcutDetails.targetMimeType; 
+682	  } 
+683	  return f?.mimeType; 
+684	} 
+685	 
+686	function isFolderItem(f){ 
+687	  return effectiveMime(f)===FOLDER_MIME; 
+688	} 
+689	 
+690	function normalizeDriveItem(f){ 
+691	  if(!f)return f; 
+692	 
+693	  if(f.mimeType===SHORTCUT_MIME && f.shortcutDetails?.targetId){ 
+694	    return { 
+695	      ...f, 
+696	      shortcutId:f.id, 
+697	      targetId:f.shortcutDetails.targetId, 
+698	      targetMimeType:f.shortcutDetails.targetMimeType||'', 
+699	      id:f.shortcutDetails.targetId, 
+700	      mimeType:f.shortcutDetails.targetMimeType||f.mimeType, 
+701	      isShortcut:true 
+702	    }; 
+703	  } 
+704	 
+705	  return { 
+706	    ...f, 
+707	    isShortcut:false 
+708	  }; 
+709	} 
+710	 
+711	 
+712	function looksLikeMovie(name,mime){if(mime==='application/vnd.google-apps.folder')return false;return (mime||'').startsWith('video/')||/\.(mp4|mkv|avi|mov|m4v|webm|mpeg|mpg)$/i.test(name||'')} 
+713	 
+714	function cleanTitle(name){ 
+715	  return String(name||'') 
+716	    .replace(/\.(mp4|mkv|avi|mov|m4v|webm|mpeg|mpg)$/i,'') 
+717	    .replace(/\[[^\]]+\]/g,' ') 
+718	    .replace(/\((?:1080p|720p|2160p|4k|bluray|web[- ]?dl|webrip|hdrip|dvdrip)[^)]*\)/ig,' ') 
+719	    .replace(/\b(1080p|720p|2160p|4k|bluray|web[- ]?dl|webrip|hdrip|dvdrip|x264|x265|h264|h265|hevc|aac|latino|dual|castellano|español|sub(?:s|titulado)?|multi)\b/ig,' ') 
+720	    .replace(/[._\-]+/g,' ') 
+721	    .replace(/\s+/g,' ') 
+722	    .trim(); 
+723	} 
+724	 
+725	function normalizeTitle(s){ 
+726	  return String(s||'') 
+727	    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') 
+728	    .toLowerCase() 
+729	    .replace(/\b(19\d{2}|20\d{2})\b/g,' ') 
+730	    .replace(/[^a-z0-9]+/g,' ') 
+731	    .replace(/\s+/g,' ') 
+732	    .trim(); 
+733	} 
+734	 
+735	function titleScore(a,b){ 
+736	  const A=normalizeTitle(a), B=normalizeTitle(b); 
+737	  if(!A||!B)return 0; 
+738	  if(A===B)return 100; 
+739	  if(A.includes(B)||B.includes(A))return 88; 
+740	 
+741	  const sa=new Set(A.split(' ').filter(x=>x.length>1)); 
+742	  const sb=new Set(B.split(' ').filter(x=>x.length>1)); 
+743	  const inter=[...sa].filter(x=>sb.has(x)).length; 
+744	  const union=new Set([...sa,...sb]).size||1; 
+745	  return Math.round((inter/union)*80); 
+746	} 
+747	 
+748	function detectYear(name){const m=String(name||'').match(/(19\d{2}|20\d{2})/);return m?m[1]:''} 
+749	function detectCategory(name){const n=String(name||'').toLowerCase();if(n.includes('animacion')||n.includes('animación')||n.includes('cartoon')||n.includes('disney')||n.includes('pixar'))return 'Animación';return 'Familiar'} 
+750	function basicMetadata(movie){return{title:cleanTitle(movie.name),originalTitle:'',overview:movie.description||'Sin descripción disponible.',poster:drivePreviewImage(movie),year:detectYear(movie.name),rating:'',language:''}} 
+751	 
+752	async function translateToSpanish(text){ 
+753	  const value=String(text||'').trim(); 
+754	  if(!value)return ''; 
+755	  try{ 
+756	    const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q='+encodeURIComponent(value); 
+757	    const r=await fetch(url); 
+758	    if(!r.ok)return value; 
+759	    const d=await r.json(); 
+760	    const translated=(d?.[0]||[]).map(x=>x?.[0]||'').join('').trim(); 
+761	    return translated||value; 
+762	  }catch{ 
+763	    return value; 
+764	  } 
+765	} 
+766	 
+767	 
+768	function drivePreviewImage(movie){ 
+769	  if(movie?.thumbnailLink){ 
+770	    return String(movie.thumbnailLink) 
+771	      .replace(/=s\d+(-c)?$/,'=s700') 
+772	      .replace(/=w\d+-h\d+(-p-k-nu)?$/,'=w700'); 
+773	  } 
+774	  return ''; 
+775	} 
+776	 
+777	async function autoTranslateToSpanish(text){ 
+778	  const value=String(text||'').trim(); 
+779	  if(!value)return ''; 
+780	  try{ 
+781	    const u='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q='+encodeURIComponent(value); 
+782	    const r=await fetch(u); 
+783	    if(!r.ok)return value; 
+784	    const d=await r.json(); 
+785	    return (d?.[0]||[]).map(x=>x?.[0]||'').join('').trim()||value; 
+786	  }catch{ 
+787	    return value; 
+788	  } 
+789	} 
+790	 
+791	async function spanishOverviewFor(tmdbId,key,fallback=''){ 
+792	  try{ 
+793	    const r=await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${encodeURIComponent(key)}&language=es-MX`); 
+794	    if(r.ok){ 
+795	      const d=await r.json(); 
+796	      if(d.overview?.trim())return d.overview.trim(); 
+797	    } 
+798	 
+799	    const tr=await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/translations?api_key=${encodeURIComponent(key)}`); 
+800	    if(tr.ok){ 
+801	      const td=await tr.json(); 
+802	      const list=td.translations||[]; 
+803	      const preferred = 
+804	        list.find(x=>x.iso_639_1==='es' && x.iso_3166_1==='MX') || 
+805	        list.find(x=>x.iso_639_1==='es' && x.iso_3166_1==='ES') || 
+806	        list.find(x=>x.iso_639_1==='es'); 
+807	      const txt=preferred?.data?.overview?.trim(); 
+808	      if(txt)return txt; 
+809	    } 
+810	  }catch{} 
+811	 
+812	  return fallback ? await autoTranslateToSpanish(fallback) : ''; 
+813	} 
+814	 
+815	async function getMovieMetadata(movie){ 
+816	  if(metaCache.has(movie.id))return metaCache.get(movie.id); 
+817	 
+818	  const key=window.CINEKIDS?.TMDB_API_KEY||''; 
+819	  if(!key)return basicMetadata(movie); 
+820	 
+821	  const rawTitle=cleanTitle(movie.name); 
+822	  const query=rawTitle.replace(/\b(19\d{2}|20\d{2})\b/g,'').trim(); 
+823	  const year=detectYear(movie.name); 
+824	 
+825	  try{ 
+826	    const params=new URLSearchParams({ 
+827	      api_key:key, 
+828	      language:'es-MX', 
+829	      region:'MX', 
+830	      query, 
+831	      include_adult:'false' 
+832	    }); 
+833	    if(year)params.set('year',year); 
+834	 
+835	    const r=await fetch('https://api.themoviedb.org/3/search/movie?'+params.toString()); 
+836	    if(!r.ok)throw new Error('TMDB '+r.status); 
+837	    const data=await r.json(); 
+838	 
+839	    const candidates=(data.results||[]).slice(0,10).map(hit=>{ 
+840	      let score=Math.max( 
+841	        titleScore(rawTitle, hit.title), 
+842	        titleScore(rawTitle, hit.original_title) 
+843	      ); 
+844	 
+845	      const hitYear=(hit.release_date||'').slice(0,4); 
+846	 
+847	      if(year && hitYear){ 
+848	        if(year===hitYear)score+=18; 
+849	        else if(Math.abs(Number(year)-Number(hitYear))===1)score+=6; 
+850	        else score-=20; 
+851	      } 
+852	 
+853	      if(hit.poster_path)score+=2; 
+854	 
+855	      return {hit,score}; 
+856	    }).sort((a,b)=>b.score-a.score); 
+857	 
+858	    const best=candidates[0]; 
+859	 
+860	    if(!best || best.score<72){ 
+861	      const meta=basicMetadata(movie); 
+862	      meta.poster=drivePreviewImage(movie); 
+863	      meta.match='drive-preview'; 
+864	      metaCache.set(movie.id,meta); 
+865	      saveMetaCache(); 
+866	      return meta; 
+867	    } 
+868	 
+869	    const hit=best.hit; 
+870	    let overview=hit.overview||''; 
+871	 
+872	    if(!overview || /\b(the|and|with|from|into|after|when|while|his|her|their|must|young|story)\b/i.test(overview)){ 
+873	      overview=await spanishOverviewFor(hit.id,key,overview||movie.description||''); 
+874	    } 
+875	 
+876	    const meta={ 
+877	      title:hit.title||rawTitle, 
+878	      originalTitle:hit.original_title||'', 
+879	      overview:overview||'Sin descripción disponible.', 
+880	      poster:hit.poster_path?'https://image.tmdb.org/t/p/w500'+hit.poster_path:drivePreviewImage(movie), 
+881	      year:(hit.release_date||'').slice(0,4)||year, 
+882	      rating:hit.vote_average?Number(hit.vote_average).toFixed(1):'', 
+883	      language:hit.original_language||'', 
+884	      match:'tmdb', 
+885	      score:best.score 
+886	    }; 
+887	 
+888	    metaCache.set(movie.id,meta); 
+889	    saveMetaCache(); 
+890	    return meta; 
+891	 
+892	  }catch{ 
+893	    const meta=basicMetadata(movie); 
+894	    meta.poster=drivePreviewImage(movie); 
+895	    return meta; 
+896	  } 
+897	} 
+898	 
+899	async function enrichVisibleMovies(){ 
+900	  if(enrichRunning)return; 
+901	  const key=window.CINEKIDS?.TMDB_API_KEY||''; 
+902	  if(!key)return; 
+903	 
+904	  const generation=++enrichGeneration; 
+905	  enrichRunning=true; 
+906	 
+907	  try{ 
+908	    const q=search.value.toLowerCase().trim(); 
+909	    let list=movies.filter(m=> 
+910	      (filter==='Todos'||m.cat===filter) && 
+911	      (!onlyFav||fav.has(m.id)) && 
+912	      cleanTitle(m.name).toLowerCase().includes(q) 
+913	    ).slice(0,renderLimit); 
+914	 
+915	    const pending=list.filter(m=>!metaCache.has(m.id)); 
+916	 
+917	    if(!pending.length)return; 
+918	 
+919	    msg(`Buscando portadas y fichas en español… 0/${pending.length}`); 
+920	 
+921	    let done=0; 
+922	    const workers=4; 
+923	 
+924	    async function worker(){ 
+925	      while(pending.length && generation===enrichGeneration){ 
+926	        const m=pending.shift(); 
+927	        if(!m)break; 
+928	        try{ await getMovieMetadata(m); }catch{} 
+929	        done++; 
+930	        if(done===1 || done%4===0 || done===done+pending.length){ 
+931	          msg(`Buscando portadas y fichas en español… ${done}/${done+pending.length}`); 
+932	          render(false); 
+933	        } 
+934	      } 
+935	    } 
+936	 
+937	    await Promise.all(Array.from({length:workers},worker)); 
+938	 
+939	    if(generation===enrichGeneration){ 
+940	      render(false); 
+941	      msg('Portadas y fichas visibles actualizadas.'); 
+942	    } 
+943	  }finally{ 
+944	    enrichRunning=false; 
+945	  } 
+946	} 
+947	 
+948	function resetRender(){renderLimit=60;render()} 
+949	function render(triggerEnrich=true){const q=search.value.toLowerCase().trim();let folders=items.filter(isFolder).filter(f=>String(f.name||'').toLowerCase().includes(q));let movieList=movies.filter(m=>(filter==='Todos'||m.cat===filter)&&(!onlyFav||fav.has(m.id))&&cleanTitle(m.name).toLowerCase().includes(q));if(onlyFav)folders=[];count.textContent=`${folders.length} carpetas · ${movieList.length} películas`;const visibleMovies=movieList.slice(0,renderLimit);let html='';html+=folders.map(f=>{const encodedName=encodeURIComponent(f.name);const icon=f.isShortcut?'📁↗':'📁';const type=f.isShortcut?'Acceso directo a carpeta':'Carpeta';return `<article class="card" onclick="openFolder('${effectiveId(f)}','${encodedName}')"><div class="poster folderPoster"><div><span class="folderIcon">${icon}</span>${escapeHtml(f.name)}</div></div><div class="meta"><div class="title">${escapeHtml(f.name)}</div><div class="small">${type}</div></div></article>`}).join('');html+=visibleMovies.map(m=>{const cached=metaCache.get(m.id);const poster=cached?.poster||'';const shownTitle=cached?.title||cleanTitle(m.name);const year=cached?.year||detectYear(m.name);return `<article class="card" onclick="openMovie('${m.id}')"><button class="heart" onclick="event.stopPropagation();toggleFav('${m.id}')">${fav.has(m.id)?'♥':'♡'}</button><div class="poster">${poster?`<img loading="lazy" src="${escapeHtml(poster)}" alt="">`:''}${poster?'':`<div><span class="movieIcon">🎬</span>${escapeHtml(shownTitle)}</div>`}${poster?`<div class="posterShade">${escapeHtml(shownTitle)}</div>`:''}</div><div class="meta"><div class="title">${escapeHtml(shownTitle)}</div><div class="small">${year?escapeHtml(year)+' · ':''}${escapeHtml(m.mimeType||'video')}</div></div></article>`}).join('');if(movieList.length>renderLimit)html+=`<div class="loadMore"><button class="btn secondary" onclick="loadMore()">Cargar más (${movieList.length-renderLimit})</button></div>`;if(!html)html=`<div class="empty">${accessToken?'Esta carpeta está vacía o no contiene videos compatibles.':'Conecta Google para cargar tu catálogo.'}</div>`;grid.innerHTML=html;if(triggerEnrich)setTimeout(enrichVisibleMovies,80)} 
+950	function loadMore(){renderLimit+=60;render()} 
+951	function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))} 
+952	function toggleFav(id){fav.has(id)?fav.delete(id):fav.add(id);localStorage.setItem('ck_fav',JSON.stringify([...fav]));render()} 
+953	function setFilter(value,button){filter=value;onlyFav=false;renderLimit=60;sectionTitle.textContent=value==='Todos'?(navigation.length?navigation[navigation.length-1].name:'Tu biblioteca'):value;document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));if(button&&button.closest?.('.tabs'))button.classList.add('active');render()} 
+954	function showFavorites(){onlyFav=true;filter='Todos';renderLimit=60;sectionTitle.textContent='Favoritos';render()} 
+955	async function home(){filter='Todos';onlyFav=false;navigation=[];currentDrive=null;items=[];movies=[];renderLimit=60;breadcrumb.style.display='none';sectionTitle.textContent='Tu biblioteca';render();if(accessToken)await loadSharedDrives();scrollTo({top:0,behavior:'smooth'})} 
+956	function focusSearch(){ 
+957	  search.focus(); 
+958	  search.scrollIntoView({behavior:'smooth',block:'center'}); 
+959	} 
+960	 
+961	function settings(){ 
+962	  updateAudioPrefButton();const tmdb=window.CINEKIDS?.TMDB_API_KEY?'Sí':'No';msg('Ajustes\nGoogle Client ID configurado: '+(window.CINEKIDS?.GOOGLE_CLIENT_ID&&!window.CINEKIDS.GOOGLE_CLIENT_ID.includes('PON_AQUI')?'Sí':'No')+'\nPortadas y fichas TMDB: '+tmdb)} 
+963	 
+964	function updateAudioPrefButton(){ 
+965	  const b=document.getElementById('audioPrefBtn'); 
+966	  if(b)b.textContent='🎧 Preferir Latino: '+(preferLatino?'ON':'OFF'); 
+967	} 
+968	 
+969	function toggleAudioPreference(){ 
+970	  preferLatino=!preferLatino; 
+971	  localStorage.setItem(AUDIO_PREF_KEY,preferLatino?'1':'0'); 
+972	  updateAudioPrefButton(); 
+973	  msg(preferLatino 
+974	    ?'CineKids intentará priorizar pistas en Español Latino cuando el navegador permita seleccionarlas.' 
+975	    :'Preferencia automática de audio desactivada.'); 
+976	} 
+977	 
+978	function audioLabelScore(track){ 
+979	  const s=((track?.label||'')+' '+(track?.language||'')).toLowerCase(); 
+980	  if(/latino|latam|español latino|spanish latin/.test(s))return 100; 
+981	  if(/español|spanish|castellano/.test(s))return 80; 
+982	  if(/\b(es|spa|es-mx|es-419)\b/.test(s))return 70; 
+983	  return 0; 
+984	} 
+985	 
+986	function trySelectLatinoTrack(video){ 
+987	  try{ 
+988	    const tracks=video.audioTracks; 
+989	    if(!tracks || !tracks.length)return false; 
+990	 
+991	    let best=null,bestScore=0; 
+992	 
+993	    for(let i=0;i<tracks.length;i++){ 
+994	      const t=tracks[i]; 
+995	      const score=audioLabelScore(t); 
+996	      if(score>bestScore){ 
+997	        best=t; 
+998	        bestScore=score; 
+999	      } 
+1000	    } 
+1001	 
+1002	    if(best && bestScore>0){ 
+1003	      for(let i=0;i<tracks.length;i++){ 
+1004	        tracks[i].enabled=(tracks[i]===best); 
+1005	      } 
+1006	      msg('🎧 Pista seleccionada automáticamente: '+(best.label||best.language||'Español')); 
+1007	      return true; 
+1008	    } 
+1009	  }catch{} 
+1010	 
+1011	  return false; 
+1012	} 
+1013	 
+1014	async function tryNativeLatino(){ 
+1015	  if(!currentMovie){ 
+1016	    msg('Primero abre una película.'); 
+1017	    return; 
+1018	  } 
+1019	 
+1020	  const native=document.getElementById('nativePlayer'); 
+1021	  const drive=document.getElementById('drivePlayer'); 
+1022	 
+1023	  msg('Probando reproductor nativo para detectar pistas de audio…'); 
+1024	 
+1025	  try{ 
+1026	    const url='https://www.googleapis.com/drive/v3/files/'+ 
+1027	      encodeURIComponent(currentMovie.id)+ 
+1028	      '?alt=media&supportsAllDrives=true'; 
+1029	 
+1030	    const r=await fetch(url,{ 
+1031	      headers:{Authorization:'Bearer '+accessToken} 
+1032	    }); 
+1033	 
+1034	    if(!r.ok)throw new Error('HTTP '+r.status); 
+1035	 
+1036	    // This native mode downloads the file to browser memory. 
+1037	    // It is therefore only an optional fallback for compatible files. 
+1038	    const blob=await r.blob(); 
+1039	 
+1040	    if(nativeObjectUrl){ 
+1041	      URL.revokeObjectURL(nativeObjectUrl); 
+1042	    } 
+1043	 
+1044	    nativeObjectUrl=URL.createObjectURL(blob); 
+1045	 
+1046	    drive.style.display='none'; 
+1047	    native.style.display='block'; 
+1048	    native.src=nativeObjectUrl; 
+1049	 
+1050	    native.onloadedmetadata=()=>{ 
+1051	      let selected=false; 
+1052	 
+1053	      if(preferLatino){ 
+1054	        selected=trySelectLatinoTrack(native); 
+1055	      } 
+1056	 
+1057	      if(!selected){ 
+1058	        msg('El navegador no expone una pista Latino seleccionable. Usa “Abrir reproductor Drive” para reproducir normalmente.'); 
+1059	      } 
+1060	 
+1061	      native.play().catch(()=>{}); 
+1062	    }; 
+1063	 
+1064	  }catch(e){ 
+1065	    native.style.display='none'; 
+1066	    drive.style.display='block'; 
+1067	    msg('No se pudo usar el modo nativo: '+e.message+'. Se mantiene el reproductor de Google Drive.'); 
+1068	  } 
+1069	} 
+1070	 
+1071	async function openMovie(id){ 
+1072	 currentMovieId=id;const movie=movies.find(x=>x.id===id);if(!movie)return;currentMovie=movie;const player=document.getElementById('player'),drivePlayer=document.getElementById('drivePlayer'),ptitle=document.getElementById('ptitle'),pmeta=document.getElementById('pmeta'),detailPoster=document.getElementById('detailPoster'),detailChips=document.getElementById('detailChips'),overview=document.getElementById('overview');const meta=await getMovieMetadata(movie);ptitle.textContent=meta.title||cleanTitle(movie.name);pmeta.textContent=movie.mimeType||'video';detailPoster.src=meta.poster||'';detailPoster.style.display=meta.poster?'block':'none';const chips=[];if(meta.year)chips.push(meta.year);if(meta.rating)chips.push('★ '+meta.rating);if(meta.language)chips.push('Idioma original: '+meta.language.toUpperCase());if(meta.match==='drive-preview')chips.push('Vista previa de Drive');detailChips.innerHTML=chips.map(c=>`<span class="chip">${escapeHtml(c)}</span>`).join('');overview.textContent=meta.overview||'Sin descripción disponible.';const native=document.getElementById('nativePlayer'); 
+1073	  native.pause(); 
+1074	  native.removeAttribute('src'); 
+1075	  native.style.display='none'; 
+1076	  drivePlayer.style.display='block'; 
+1077	  drivePlayer.src='https://drive.google.com/file/d/'+encodeURIComponent(movie.id)+'/preview';player.showModal();metaCache.set(movie.id,meta);saveMetaCache();render();msg('Película abierta desde Google Drive.')} 
+1078	function openFullPlayer(){ 
+1079	  if(!currentMovieId){msg('No hay una película seleccionada.');return} 
+1080	  const url='https://drive.google.com/file/d/'+encodeURIComponent(currentMovieId)+'/preview'; 
+1081	  window.open(url,'_blank','noopener,noreferrer'); 
+1082	} 
+1083	 
+1084	function closePlayer(){ 
+1085	  const iframe=document.getElementById('drivePlayer'); 
+1086	  const native=document.getElementById('nativePlayer'); 
+1087	  iframe.src='about:blank'; 
+1088	  iframe.style.display='block'; 
+1089	  native.pause(); 
+1090	  native.removeAttribute('src'); 
+1091	  native.style.display='none'; 
+1092	 
+1093	  if(nativeObjectUrl){ 
+1094	    URL.revokeObjectURL(nativeObjectUrl); 
+1095	    nativeObjectUrl=null; 
+1096	  } 
+1097	 
+1098	  currentMovie=null; 
+1099	  currentMovieId=null; 
+1100	  document.getElementById('player').close(); 
+1101	} 
+1102	 
+1103	 
+1104	 
+1105	function logout(){ 
+1106	  accessToken=null; 
+1107	  authBusy=false; 
+1108	  items=[]; 
+1109	  movies=[]; 
+1110	  navigation=[]; 
+1111	  currentDrive=null; 
+1112	  renderLimit=60; 
+1113	 
+1114	  document.getElementById('driveChooser').innerHTML=''; 
+1115	  document.getElementById('loginBtn').textContent='Continuar con Google'; 
+1116	 
+1117	  breadcrumb.style.display='none'; 
+1118	  sectionTitle.textContent='Tu biblioteca'; 
+1119	 
+1120	  render(); 
+1121	 
+1122	  msg('Sesión cerrada.'); 
+1123	} 
+1124	 
+1125	 
+1126	addEventListener('beforeinstallprompt',event=>{event.preventDefault();deferredPrompt=event}); 
+1127	async function installApp(){if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null}else msg('En Chrome abre el menú ⋮ y elige “Instalar aplicación” o “Añadir a pantalla de inicio”.')} 
+1128	if('serviceWorker' in navigator){ 
+1129	  navigator.serviceWorker.getRegistrations() 
+1130	    .then(registrations=>Promise.all(registrations.map(r=>r.unregister()))) 
+1131	    .catch(()=>{}); 
+1132	} 
+1133	if('caches' in window){ 
+1134	  caches.keys() 
+1135	    .then(keys=>Promise.all(keys.map(k=>caches.delete(k)))) 
+1136	    .catch(()=>{}); 
+1137	} 
+1138	render(); 
+1139	</script> 
+1140	</body> 
+1141	</html> 
+1142	 
