@@ -25,13 +25,13 @@ header{display:flex;justify-content:space-between;align-items:center}.brand{font
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;position:relative}.poster{aspect-ratio:2/3;display:grid;place-items:center;padding:12px;text-align:center;font-weight:850;background:linear-gradient(145deg,#273c55,#121c2d);overflow:hidden;position:relative}
 .poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.posterShade{position:absolute;inset:auto 0 0 0;padding:28px 10px 10px;background:linear-gradient(transparent,rgba(0,0,0,.82));z-index:1;text-align:left}
 .folderPoster{background:linear-gradient(145deg,#243a5e,#151f35)}.folderIcon,.movieIcon{display:block;font-size:52px;margin-bottom:10px}.meta{padding:11px}.title{font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.small{font-size:12px;color:var(--muted);margin-top:4px}.heart{position:absolute;right:8px;top:8px;width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:white;font-size:18px;z-index:3}
-.loadMore{grid-column:1/-1;display:flex;justify-content:center;padding:14px}
+.loadMore{grid-column:1/-1;display:flex;justify-content:center;padding:14px}.enrichStatus{grid-column:1/-1;padding:8px 12px;border-radius:12px;background:#0c2139;color:#cbe9ff;font-size:13px}
 nav{position:fixed;left:12px;right:12px;bottom:10px;max-width:760px;margin:auto;background:rgba(8,18,32,.94);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;padding:8px;display:grid;grid-template-columns:repeat(4,1fr);z-index:50}nav button{background:none;border:0;color:#aab7c9;padding:8px 2px;font-size:12px}nav button.active{color:white}
 dialog{width:min(95vw,960px);border:0;border-radius:22px;padding:0;background:#07111f;color:white;overflow:hidden}dialog::backdrop{background:rgba(0,0,0,.82)}#drivePlayer{width:100%;height:min(66vh,600px);border:0;background:#000;display:block}.dlg{padding:16px}.empty{padding:30px;text-align:center;color:var(--muted);grid-column:1/-1}
 .detailHero{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:start}.detailPoster{width:110px;aspect-ratio:2/3;border-radius:12px;object-fit:cover;background:#17263d}.detailTitle{margin:0 0 6px;font-size:22px}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chip{font-size:12px;background:#17263d;border:1px solid var(--line);padding:5px 8px;border-radius:999px;color:#d8e3f3}.overview{margin-top:12px;color:#d6e1ef;line-height:1.5}
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="config.js?v=20260825-0120"></script>
+<script src="config.js?v=20260825-0128"></script>
 </head>
 <body>
 <div class="app">
@@ -82,6 +82,7 @@ dialog{width:min(95vw,960px);border:0;border-radius:22px;padding:0;background:#0
 </dialog>
 <script>
 let tokenClient,accessToken=null,items=[],movies=[],filter='Todos',onlyFav=false,deferredPrompt=null,currentDrive=null,navigation=[],renderLimit=60;
+let enrichRunning=false,enrichGeneration=0;
 const fav=new Set(JSON.parse(localStorage.getItem('ck_fav')||'[]'));
 const metaCache=new Map(JSON.parse(localStorage.getItem('ck_meta_cache')||'[]'));
 const notice=document.getElementById('notice'),grid=document.getElementById('grid'),count=document.getElementById('count'),search=document.getElementById('search'),sectionTitle=document.getElementById('sectionTitle'),breadcrumb=document.getElementById('breadcrumb'),pathName=document.getElementById('pathName');
@@ -101,10 +102,148 @@ function looksLikeMovie(name,mime){if(mime==='application/vnd.google-apps.folder
 function cleanTitle(name){return String(name||'').replace(/\.(mp4|mkv|avi|mov|m4v|webm|mpeg|mpg)$/i,'').replace(/\[[^\]]+\]/g,' ').replace(/\((?:1080p|720p|2160p|4k|bluray|web[- ]?dl|webrip|hdrip|dvdrip)[^)]*\)/ig,' ').replace(/(1080p|720p|2160p|4k|bluray|web[- ]?dl|webrip|hdrip|dvdrip|x264|x265|h264|h265|hevc|aac|latino|dual|castellano)/ig,' ').replace(/[._]+/g,' ').replace(/\s+/g,' ').trim()}
 function detectYear(name){const m=String(name||'').match(/(19\d{2}|20\d{2})/);return m?m[1]:''}
 function detectCategory(name){const n=String(name||'').toLowerCase();if(n.includes('animacion')||n.includes('animación')||n.includes('cartoon')||n.includes('disney')||n.includes('pixar'))return 'Animación';return 'Familiar'}
-async function getMovieMetadata(movie){if(metaCache.has(movie.id))return metaCache.get(movie.id);const key=window.CINEKIDS?.TMDB_API_KEY||'';if(!key)return basicMetadata(movie);const query=cleanTitle(movie.name).replace(/(19\d{2}|20\d{2})/g,'').trim();const year=detectYear(movie.name);try{const params=new URLSearchParams({api_key:key,language:'es-MX',query:query,include_adult:'false'});if(year)params.set('year',year);const r=await fetch('https://api.themoviedb.org/3/search/movie?'+params.toString());if(!r.ok)throw new Error('TMDB '+r.status);const data=await r.json();const hit=(data.results||[])[0];if(!hit){const meta=basicMetadata(movie);metaCache.set(movie.id,meta);saveMetaCache();return meta}const meta={title:hit.title||cleanTitle(movie.name),originalTitle:hit.original_title||'',overview:hit.overview||movie.description||'Sin descripción disponible.',poster:hit.poster_path?'https://image.tmdb.org/t/p/w500'+hit.poster_path:'',year:(hit.release_date||'').slice(0,4)||year,rating:hit.vote_average?Number(hit.vote_average).toFixed(1):'',language:hit.original_language||''};metaCache.set(movie.id,meta);saveMetaCache();return meta}catch{return basicMetadata(movie)}}
 function basicMetadata(movie){return{title:cleanTitle(movie.name),originalTitle:'',overview:movie.description||'Sin descripción disponible.',poster:movie.thumbnailLink||'',year:detectYear(movie.name),rating:'',language:''}}
+
+async function translateToSpanish(text){
+  const value=String(text||'').trim();
+  if(!value)return '';
+  try{
+    const url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=es&dt=t&q='+encodeURIComponent(value);
+    const r=await fetch(url);
+    if(!r.ok)return value;
+    const d=await r.json();
+    const translated=(d?.[0]||[]).map(x=>x?.[0]||'').join('').trim();
+    return translated||value;
+  }catch{
+    return value;
+  }
+}
+
+async function getMovieMetadata(movie){
+  if(metaCache.has(movie.id))return metaCache.get(movie.id);
+
+  const key=window.CINEKIDS?.TMDB_API_KEY||'';
+  if(!key)return basicMetadata(movie);
+
+  const query=cleanTitle(movie.name).replace(/\b(19\d{2}|20\d{2})\b/g,'').trim();
+  const year=detectYear(movie.name);
+
+  try{
+    const params=new URLSearchParams({
+      api_key:key,
+      language:'es-MX',
+      query:query,
+      include_adult:'false'
+    });
+    if(year)params.set('year',year);
+
+    const r=await fetch('https://api.themoviedb.org/3/search/movie?'+params.toString());
+    if(!r.ok)throw new Error('TMDB '+r.status);
+    const data=await r.json();
+    const hit=(data.results||[])[0];
+
+    if(!hit){
+      const meta=basicMetadata(movie);
+      metaCache.set(movie.id,meta);
+      saveMetaCache();
+      return meta;
+    }
+
+    let overview=hit.overview||movie.description||'';
+
+    // If the Spanish result is empty, ask TMDB in English and translate the overview.
+    if(!overview){
+      try{
+        const p2=new URLSearchParams({
+          api_key:key,
+          language:'en-US',
+          query:query,
+          include_adult:'false'
+        });
+        if(year)p2.set('year',year);
+        const r2=await fetch('https://api.themoviedb.org/3/search/movie?'+p2.toString());
+        if(r2.ok){
+          const d2=await r2.json();
+          const h2=(d2.results||[])[0];
+          if(h2?.overview)overview=await translateToSpanish(h2.overview);
+        }
+      }catch{}
+    }else if(hit.original_language==='en'){
+      // TMDB often already returns Spanish with language=es-MX.
+      // If the text still looks English, try an automatic translation.
+      const englishHints=/\b(the|and|with|from|into|after|when|while|his|her|their|must|find|young|story)\b/i;
+      if(englishHints.test(overview))overview=await translateToSpanish(overview);
+    }
+
+    const meta={
+      title:hit.title||cleanTitle(movie.name),
+      originalTitle:hit.original_title||'',
+      overview:overview||'Sin descripción disponible.',
+      poster:hit.poster_path?'https://image.tmdb.org/t/p/w500'+hit.poster_path:'',
+      year:(hit.release_date||'').slice(0,4)||year,
+      rating:hit.vote_average?Number(hit.vote_average).toFixed(1):'',
+      language:hit.original_language||''
+    };
+
+    metaCache.set(movie.id,meta);
+    saveMetaCache();
+    return meta;
+  }catch{
+    return basicMetadata(movie);
+  }
+}
+
+async function enrichVisibleMovies(){
+  if(enrichRunning)return;
+  const key=window.CINEKIDS?.TMDB_API_KEY||'';
+  if(!key)return;
+
+  const generation=++enrichGeneration;
+  enrichRunning=true;
+
+  try{
+    const q=search.value.toLowerCase().trim();
+    let list=movies.filter(m=>
+      (filter==='Todos'||m.cat===filter) &&
+      (!onlyFav||fav.has(m.id)) &&
+      cleanTitle(m.name).toLowerCase().includes(q)
+    ).slice(0,renderLimit);
+
+    const pending=list.filter(m=>!metaCache.has(m.id));
+
+    if(!pending.length)return;
+
+    msg(`Buscando portadas y fichas en español… 0/${pending.length}`);
+
+    let done=0;
+    const workers=4;
+
+    async function worker(){
+      while(pending.length && generation===enrichGeneration){
+        const m=pending.shift();
+        if(!m)break;
+        try{ await getMovieMetadata(m); }catch{}
+        done++;
+        if(done===1 || done%4===0 || done===done+pending.length){
+          msg(`Buscando portadas y fichas en español… ${done}/${done+pending.length}`);
+          render(false);
+        }
+      }
+    }
+
+    await Promise.all(Array.from({length:workers},worker));
+
+    if(generation===enrichGeneration){
+      render(false);
+      msg('Portadas y fichas visibles actualizadas.');
+    }
+  }finally{
+    enrichRunning=false;
+  }
+}
+
 function resetRender(){renderLimit=60;render()}
-function render(){const q=search.value.toLowerCase().trim();let folders=items.filter(isFolder).filter(f=>String(f.name||'').toLowerCase().includes(q));let movieList=movies.filter(m=>(filter==='Todos'||m.cat===filter)&&(!onlyFav||fav.has(m.id))&&cleanTitle(m.name).toLowerCase().includes(q));if(onlyFav)folders=[];count.textContent=`${folders.length} carpetas · ${movieList.length} películas`;const visibleMovies=movieList.slice(0,renderLimit);let html='';html+=folders.map(f=>{const encodedName=encodeURIComponent(f.name);return `<article class="card" onclick="openFolder('${f.id}','${encodedName}')"><div class="poster folderPoster"><div><span class="folderIcon">📁</span>${escapeHtml(f.name)}</div></div><div class="meta"><div class="title">${escapeHtml(f.name)}</div><div class="small">Carpeta</div></div></article>`}).join('');html+=visibleMovies.map(m=>{const cached=metaCache.get(m.id);const poster=cached?.poster||'';const shownTitle=cached?.title||cleanTitle(m.name);const year=cached?.year||detectYear(m.name);return `<article class="card" onclick="openMovie('${m.id}')"><button class="heart" onclick="event.stopPropagation();toggleFav('${m.id}')">${fav.has(m.id)?'♥':'♡'}</button><div class="poster">${poster?`<img loading="lazy" src="${escapeHtml(poster)}" alt="">`:''}${poster?'':`<div><span class="movieIcon">🎬</span>${escapeHtml(shownTitle)}</div>`}${poster?`<div class="posterShade">${escapeHtml(shownTitle)}</div>`:''}</div><div class="meta"><div class="title">${escapeHtml(shownTitle)}</div><div class="small">${year?escapeHtml(year)+' · ':''}${escapeHtml(m.mimeType||'video')}</div></div></article>`}).join('');if(movieList.length>renderLimit)html+=`<div class="loadMore"><button class="btn secondary" onclick="loadMore()">Cargar más (${movieList.length-renderLimit})</button></div>`;if(!html)html=`<div class="empty">${accessToken?'Esta carpeta está vacía o no contiene videos compatibles.':'Conecta Google para cargar tu catálogo.'}</div>`;grid.innerHTML=html}
+function render(triggerEnrich=true){const q=search.value.toLowerCase().trim();let folders=items.filter(isFolder).filter(f=>String(f.name||'').toLowerCase().includes(q));let movieList=movies.filter(m=>(filter==='Todos'||m.cat===filter)&&(!onlyFav||fav.has(m.id))&&cleanTitle(m.name).toLowerCase().includes(q));if(onlyFav)folders=[];count.textContent=`${folders.length} carpetas · ${movieList.length} películas`;const visibleMovies=movieList.slice(0,renderLimit);let html='';html+=folders.map(f=>{const encodedName=encodeURIComponent(f.name);return `<article class="card" onclick="openFolder('${f.id}','${encodedName}')"><div class="poster folderPoster"><div><span class="folderIcon">📁</span>${escapeHtml(f.name)}</div></div><div class="meta"><div class="title">${escapeHtml(f.name)}</div><div class="small">Carpeta</div></div></article>`}).join('');html+=visibleMovies.map(m=>{const cached=metaCache.get(m.id);const poster=cached?.poster||'';const shownTitle=cached?.title||cleanTitle(m.name);const year=cached?.year||detectYear(m.name);return `<article class="card" onclick="openMovie('${m.id}')"><button class="heart" onclick="event.stopPropagation();toggleFav('${m.id}')">${fav.has(m.id)?'♥':'♡'}</button><div class="poster">${poster?`<img loading="lazy" src="${escapeHtml(poster)}" alt="">`:''}${poster?'':`<div><span class="movieIcon">🎬</span>${escapeHtml(shownTitle)}</div>`}${poster?`<div class="posterShade">${escapeHtml(shownTitle)}</div>`:''}</div><div class="meta"><div class="title">${escapeHtml(shownTitle)}</div><div class="small">${year?escapeHtml(year)+' · ':''}${escapeHtml(m.mimeType||'video')}</div></div></article>`}).join('');if(movieList.length>renderLimit)html+=`<div class="loadMore"><button class="btn secondary" onclick="loadMore()">Cargar más (${movieList.length-renderLimit})</button></div>`;if(!html)html=`<div class="empty">${accessToken?'Esta carpeta está vacía o no contiene videos compatibles.':'Conecta Google para cargar tu catálogo.'}</div>`;grid.innerHTML=html;if(triggerEnrich)setTimeout(enrichVisibleMovies,80)}
 function loadMore(){renderLimit+=60;render()}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toggleFav(id){fav.has(id)?fav.delete(id):fav.add(id);localStorage.setItem('ck_fav',JSON.stringify([...fav]));render()}
