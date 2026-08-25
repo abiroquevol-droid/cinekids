@@ -427,7 +427,7 @@ dialog{
 
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="config.js?v=20260825-0232"></script>
+<script src="config.js?v=20260825-0244"></script>
 </head>
 <body>
 <div class="app">
@@ -545,40 +545,132 @@ function googleLogin(){
 async function api(path){const response=await fetch('https://www.googleapis.com/drive/v3/'+path,{headers:{Authorization:'Bearer '+accessToken}});if(!response.ok)throw new Error(await response.text());return response.json()}
 async function loadSharedDrives(){if(!accessToken)return;try{const allDrives=[];let pageToken='';do{let path='drives?pageSize=100';if(pageToken)path+='&pageToken='+encodeURIComponent(pageToken);const data=await api(path); if(data.files) data.files=data.files.map(normalizeDriveItem);allDrives.push(...(data.drives||[]));pageToken=data.nextPageToken||''}while(pageToken);const chooser=document.getElementById('driveChooser');chooser.innerHTML='';allDrives.forEach(d=>{const button=document.createElement('button');button.className='btn secondary';button.textContent=d.name;button.onclick=()=>openDrive(d);chooser.appendChild(button)});msg(`Encontradas ${allDrives.length} unidades compartidas. Elige una para explorarla.`)}catch(e){msg('No se pudieron leer las unidades compartidas: '+e.message)}}
 async function openDrive(drive){currentDrive=drive;navigation=[{id:drive.id,name:drive.name,root:true}];document.getElementById('driveChooser').innerHTML='';breadcrumb.style.display='flex';await loadFolder(drive.id,drive.name,true)}
-async function loadFolder(folderId,folderName,isRoot=false){if(!currentDrive)return;msg('Abriendo '+folderName+'…');pathName.textContent=navigation.map(x=>x.name).join(' › ');sectionTitle.textContent=folderName;try{const result=[];let pageToken='';do{const query=`'${folderId}' in parents and trashed = false`;const q=encodeURIComponent(query);const fields=encodeURIComponent('nextPageToken,files(id,name,mimeType,size,modifiedTime,parents,thumbnailLink,webViewLink,description)');let path=`files?corpora=drive&driveId=${encodeURIComponent(currentDrive.id)}&includeItemsFromAllDrives=true&supportsAllDrives=true&pageSize=1000&q=${q}&fields=${fields}&orderBy=folder,name`;if(pageToken)path+='&pageToken='+encodeURIComponent(pageToken);const data=await api(path); if(data.files) data.files=data.files.map(normalizeDriveItem);result.push(...(data.files||[]));pageToken=data.nextPageToken||''}while(pageToken);items=result;movies=result.filter(f=>looksLikeMovie(f.name,f.mimeType)).map(f=>({...f,cat:detectCategory(f.name)}));renderLimit=60;render();const folders=result.filter(isFolder).length;msg(`${folderName}: ${folders} carpetas · ${movies.length} películas.`)}catch(e){msg('Error al abrir la carpeta: '+e.message)}}
+
+async function loadFolder(folderId,folderName,isRoot=false){
+  if(!accessToken)return;
+
+  msg('Abriendo '+folderName+'…');
+  pathName.textContent=navigation.map(x=>x.name).join(' › ');
+  sectionTitle.textContent=folderName;
+
+  try{
+    const result=[];
+    let pageToken='';
+
+    do{
+      const query=`'${folderId}' in parents and trashed = false`;
+      const q=encodeURIComponent(query);
+
+      const fields=encodeURIComponent(
+        'nextPageToken,files('+
+        'id,name,mimeType,size,modifiedTime,parents,thumbnailLink,webViewLink,description,'+
+        'shortcutDetails(targetId,targetMimeType)'+
+        ')'
+      );
+
+      // allDrives is important:
+      // a shortcut may point to a folder located in another Shared Drive.
+      let path=
+        `files?corpora=allDrives`+
+        `&includeItemsFromAllDrives=true`+
+        `&supportsAllDrives=true`+
+        `&pageSize=1000`+
+        `&q=${q}`+
+        `&fields=${fields}`+
+        `&orderBy=folder,name`;
+
+      if(pageToken){
+        path+='&pageToken='+encodeURIComponent(pageToken);
+      }
+
+      const data=await api(path);
+
+      const rawFiles=data.files||[];
+
+      for(const raw of rawFiles){
+        result.push(normalizeDriveItem(raw));
+      }
+
+      pageToken=data.nextPageToken||'';
+
+    }while(pageToken);
+
+    items=result;
+
+    movies=result
+      .filter(f=>looksLikeMovie(f.name,effectiveMime(f)))
+      .map(f=>({
+        ...f,
+        cat:detectCategory(f.name)
+      }));
+
+    renderLimit=60;
+    render();
+
+    const folders=result.filter(isFolder).length;
+    const shortcuts=result.filter(f=>f.isShortcut).length;
+
+    msg(
+      `${folderName}: ${folders} carpetas · ${movies.length} películas`+
+      (shortcuts?` · ${shortcuts} accesos directos resueltos`:'')+
+      '.'
+    );
+
+  }catch(e){
+    console.error(e);
+    msg('Error al abrir la carpeta: '+e.message);
+  }
+}
+
 function isFolder(f){return isFolderItem(f)}
 async function openFolder(id,encodedName){const name=decodeURIComponent(encodedName);navigation.push({id,name,root:false});await loadFolder(id,name,false)}
 async function goBack(){if(navigation.length<=1){navigation=[];currentDrive=null;items=[];movies=[];breadcrumb.style.display='none';pathName.textContent='';sectionTitle.textContent='Tu biblioteca';renderLimit=60;render();await loadSharedDrives();return}navigation.pop();const previous=navigation[navigation.length-1];await loadFolder(previous.id,previous.name,previous.root)}
+
 
 const FOLDER_MIME='application/vnd.google-apps.folder';
 const SHORTCUT_MIME='application/vnd.google-apps.shortcut';
 
 function effectiveId(f){
-  return f?.mimeType===SHORTCUT_MIME && f?.shortcutDetails?.targetId
-    ? f.shortcutDetails.targetId
-    : f?.id;
+  if(f?.isShortcut && f?.targetId)return f.targetId;
+  if(f?.mimeType===SHORTCUT_MIME && f?.shortcutDetails?.targetId){
+    return f.shortcutDetails.targetId;
+  }
+  return f?.id;
 }
+
 function effectiveMime(f){
-  return f?.mimeType===SHORTCUT_MIME && f?.shortcutDetails?.targetMimeType
-    ? f.shortcutDetails.targetMimeType
-    : f?.mimeType;
+  if(f?.isShortcut && f?.targetMimeType)return f.targetMimeType;
+  if(f?.mimeType===SHORTCUT_MIME && f?.shortcutDetails?.targetMimeType){
+    return f.shortcutDetails.targetMimeType;
+  }
+  return f?.mimeType;
 }
+
 function isFolderItem(f){
   return effectiveMime(f)===FOLDER_MIME;
 }
+
 function normalizeDriveItem(f){
   if(!f)return f;
+
   if(f.mimeType===SHORTCUT_MIME && f.shortcutDetails?.targetId){
     return {
       ...f,
       shortcutId:f.id,
+      targetId:f.shortcutDetails.targetId,
+      targetMimeType:f.shortcutDetails.targetMimeType||'',
       id:f.shortcutDetails.targetId,
       mimeType:f.shortcutDetails.targetMimeType||f.mimeType,
       isShortcut:true
     };
   }
-  return f;
+
+  return {
+    ...f,
+    isShortcut:false
+  };
 }
+
 
 function looksLikeMovie(name,mime){if(mime==='application/vnd.google-apps.folder')return false;return (mime||'').startsWith('video/')||/\.(mp4|mkv|avi|mov|m4v|webm|mpeg|mpg)$/i.test(name||'')}
 
@@ -817,7 +909,7 @@ async function enrichVisibleMovies(){
 }
 
 function resetRender(){renderLimit=60;render()}
-function render(triggerEnrich=true){const q=search.value.toLowerCase().trim();let folders=items.filter(isFolder).filter(f=>String(f.name||'').toLowerCase().includes(q));let movieList=movies.filter(m=>(filter==='Todos'||m.cat===filter)&&(!onlyFav||fav.has(m.id))&&cleanTitle(m.name).toLowerCase().includes(q));if(onlyFav)folders=[];count.textContent=`${folders.length} carpetas · ${movieList.length} películas`;const visibleMovies=movieList.slice(0,renderLimit);let html='';html+=folders.map(f=>{const encodedName=encodeURIComponent(f.name);return `<article class="card" onclick="openFolder('${f.id}','${encodedName}')"><div class="poster folderPoster"><div><span class="folderIcon">📁</span>${escapeHtml(f.name)}</div></div><div class="meta"><div class="title">${escapeHtml(f.name)}</div><div class="small">Carpeta ↗</div></div></article>`}).join('');html+=visibleMovies.map(m=>{const cached=metaCache.get(m.id);const poster=cached?.poster||'';const shownTitle=cached?.title||cleanTitle(m.name);const year=cached?.year||detectYear(m.name);return `<article class="card" onclick="openMovie('${m.id}')"><button class="heart" onclick="event.stopPropagation();toggleFav('${m.id}')">${fav.has(m.id)?'♥':'♡'}</button><div class="poster">${poster?`<img loading="lazy" src="${escapeHtml(poster)}" alt="">`:''}${poster?'':`<div><span class="movieIcon">🎬</span>${escapeHtml(shownTitle)}</div>`}${poster?`<div class="posterShade">${escapeHtml(shownTitle)}</div>`:''}</div><div class="meta"><div class="title">${escapeHtml(shownTitle)}</div><div class="small">${year?escapeHtml(year)+' · ':''}${escapeHtml(m.mimeType||'video')}</div></div></article>`}).join('');if(movieList.length>renderLimit)html+=`<div class="loadMore"><button class="btn secondary" onclick="loadMore()">Cargar más (${movieList.length-renderLimit})</button></div>`;if(!html)html=`<div class="empty">${accessToken?'Esta carpeta está vacía o no contiene videos compatibles.':'Conecta Google para cargar tu catálogo.'}</div>`;grid.innerHTML=html;if(triggerEnrich)setTimeout(enrichVisibleMovies,80)}
+function render(triggerEnrich=true){const q=search.value.toLowerCase().trim();let folders=items.filter(isFolder).filter(f=>String(f.name||'').toLowerCase().includes(q));let movieList=movies.filter(m=>(filter==='Todos'||m.cat===filter)&&(!onlyFav||fav.has(m.id))&&cleanTitle(m.name).toLowerCase().includes(q));if(onlyFav)folders=[];count.textContent=`${folders.length} carpetas · ${movieList.length} películas`;const visibleMovies=movieList.slice(0,renderLimit);let html='';html+=folders.map(f=>{const encodedName=encodeURIComponent(f.name);const icon=f.isShortcut?'📁↗':'📁';const type=f.isShortcut?'Acceso directo a carpeta':'Carpeta';return `<article class="card" onclick="openFolder('${effectiveId(f)}','${encodedName}')"><div class="poster folderPoster"><div><span class="folderIcon">${icon}</span>${escapeHtml(f.name)}</div></div><div class="meta"><div class="title">${escapeHtml(f.name)}</div><div class="small">${type}</div></div></article>`}).join('');html+=visibleMovies.map(m=>{const cached=metaCache.get(m.id);const poster=cached?.poster||'';const shownTitle=cached?.title||cleanTitle(m.name);const year=cached?.year||detectYear(m.name);return `<article class="card" onclick="openMovie('${m.id}')"><button class="heart" onclick="event.stopPropagation();toggleFav('${m.id}')">${fav.has(m.id)?'♥':'♡'}</button><div class="poster">${poster?`<img loading="lazy" src="${escapeHtml(poster)}" alt="">`:''}${poster?'':`<div><span class="movieIcon">🎬</span>${escapeHtml(shownTitle)}</div>`}${poster?`<div class="posterShade">${escapeHtml(shownTitle)}</div>`:''}</div><div class="meta"><div class="title">${escapeHtml(shownTitle)}</div><div class="small">${year?escapeHtml(year)+' · ':''}${escapeHtml(m.mimeType||'video')}</div></div></article>`}).join('');if(movieList.length>renderLimit)html+=`<div class="loadMore"><button class="btn secondary" onclick="loadMore()">Cargar más (${movieList.length-renderLimit})</button></div>`;if(!html)html=`<div class="empty">${accessToken?'Esta carpeta está vacía o no contiene videos compatibles.':'Conecta Google para cargar tu catálogo.'}</div>`;grid.innerHTML=html;if(triggerEnrich)setTimeout(enrichVisibleMovies,80)}
 function loadMore(){renderLimit+=60;render()}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toggleFav(id){fav.has(id)?fav.delete(id):fav.add(id);localStorage.setItem('ck_fav',JSON.stringify([...fav]));render()}
